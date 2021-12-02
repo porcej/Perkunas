@@ -99,15 +99,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 @font-face {
-  font-family: 'Digital-7 Mono';
-  src: url('./fonts/Digital-7Mono.eot');
-  src: url('./fonts/Digital-7Mono.eot?#iefix') format('embedded-opentype'),
-    url('./fonts/Digital-7Mono.woff2') format('woff2'),
-    url('./fonts/Digital-7Mono.woff') format('woff'),
-    url('./fonts/Digital-7Mono.ttf') format('truetype'),
-    url('./fonts/Digital-7Mono.svg#Digital-7Mono') format('svg');
+  font-family: "Digital-7 Mono";
+  src: url("./fonts/Digital-7Mono.eot");
+  src: url("./fonts/Digital-7Mono.eot?#iefix") format("embedded-opentype"),
+    url("./fonts/Digital-7Mono.woff2") format("woff2"),
+    url("./fonts/Digital-7Mono.woff") format("woff"),
+    url("./fonts/Digital-7Mono.ttf") format("truetype"),
+    url("./fonts/Digital-7Mono.svg#Digital-7Mono") format("svg");
   font-weight: normal;
   font-style: normal;
 }

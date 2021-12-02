@@ -1,29 +1,25 @@
-import { HubConnectionBuilder, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, LogLevel } from "@aspnet/signalr";
 
 export default {
-  install (Vue) {
+  install(Vue) {
     // use a new Vue instance as the interface for Vue components to receive/send SignalR events
     // this way every component can listen to events or send new events using this.$incidentHub
     const incidentHub = new Vue();
     Vue.prototype.$incidentHub = incidentHub;
 
     // Provide methods to connect/disconnect from the SignalR hub
-    let connection = null
-    let startedPromise = null
-    let manuallyClosed = false
+    let connection = null;
+    let startedPromise = null;
+    let manuallyClosed = false;
 
     Vue.prototype.startSignalR = () => {
-
       connection = new HubConnectionBuilder()
-        .withUrl(
-          `${Vue.prototype.$http.defaults.baseURL}incidentHub`,
-        )
+        .withUrl(`${Vue.prototype.$http.defaults.baseURL}incidentHub`)
         .configureLogging(LogLevel.Information)
-        .build()
-
+        .build();
 
       // Forward hub events through the event, so we can listen for them in the Vue components
-      connection.on('ReceiveGroupMessage', (groupName, user, message) => {
+      connection.on("ReceiveGroupMessage", (groupName, user, message) => {
         // const msg = JSON.parse(message)
         //{"EventId":"8d9994c0a8f0c5b","EventCategory":"IncidentChanged","EventType":"IncidentAssigned","Key":2240758,"Payload":""}
         // if (msg.EventType === "IncidentAssigned"){
@@ -31,81 +27,98 @@ export default {
         // } else {
         //   incidentHub.$emit('other-added', msg );
         // }
-        incidentHub.$emit('group-message-received', { groupName, user, message })
-        console.log(`RGM: ${groupName} - ${message}`)
-      })
+        incidentHub.$emit("group-message-received", {
+          groupName,
+          user,
+          message,
+        });
+        console.log(`RGM: ${groupName} - ${message}`);
+      });
 
-      connection.on('IncidentFieldChanged', (incidentId, user, message) => {
+      connection.on("IncidentFieldChanged", (incidentId, user, message) => {
         console.log(`Incident: ${incidentId} - ${message}`);
-        incidentHub.$emit('incident-updated', {'incidentId': incidentId, 'message':message})
+        incidentHub.$emit("incident-updated", {
+          incidentId: incidentId,
+          message: message,
+        });
       });
 
-      connection.on('UnitStatusChanged', (incidentId, user, message) => {
+      connection.on("UnitStatusChanged", (incidentId, user, message) => {
         console.log(`Incident Unit: ${incidentId} - ${message}`);
-        incidentHub.$emit('incident-unit-updated', {'incidentId': incidentId, 'message':JSON.parse(message)})
+        incidentHub.$emit("incident-unit-updated", {
+          incidentId: incidentId,
+          message: JSON.parse(message),
+        });
       });
 
-      connection.on('IncidentAdded', (incident) => {
-        incidentHub.$emit('incident-added', JSON.parse(incident));
-        console.log("\t************************************************************************");
+      connection.on("IncidentAdded", (incident) => {
+        incidentHub.$emit("incident-added", JSON.parse(incident));
+        console.log(
+          "\t************************************************************************"
+        );
         console.log(incident);
-        console.log("\t************************************************************************");
+        console.log(
+          "\t************************************************************************"
+        );
       });
 
       // You need to call connection.start() to establish the connection but the client wont handle reconnecting for you!
       // Docs recommend listening onclose and handling it there.
       // This is the simplest of the strategies
-      function start () {
-        startedPromise = connection.start()
-          .catch(err => {
-            console.error('Failed to connect with hub', err)
-            return new Promise((resolve, reject) => setTimeout(() => start().then(resolve).catch(reject), 5000))
-          })
-        return startedPromise
+      function start() {
+        startedPromise = connection.start().catch((err) => {
+          console.error("Failed to connect with hub", err);
+          return new Promise((resolve, reject) =>
+            setTimeout(() => start().then(resolve).catch(reject), 5000)
+          );
+        });
+        return startedPromise;
       }
       connection.onclose(() => {
-        if (!manuallyClosed) start()
-      })
+        if (!manuallyClosed) start();
+      });
 
       // Start everything
-      manuallyClosed = false
-      start()
-    }
+      manuallyClosed = false;
+      start();
+    };
 
     Vue.prototype.stopSignalR = () => {
-      if (!startedPromise) return
+      if (!startedPromise) return;
 
-      manuallyClosed = true
+      manuallyClosed = true;
       return startedPromise
         .then(() => connection.stop())
-        .then(() => { startedPromise = null })
-    }
+        .then(() => {
+          startedPromise = null;
+        });
+    };
 
     // Provide methods for components to send messages back to server
     // Make sure no invocation happens until the connection is established
     incidentHub.incidentOpened = (incidentId) => {
-      if (!startedPromise) return
+      if (!startedPromise) return;
 
       return startedPromise
-        .then(() => connection.invoke('JoinIncidentGroup', `${incidentId}`))
-        .catch(console.error)
-    }
+        .then(() => connection.invoke("JoinIncidentGroup", `${incidentId}`))
+        .catch(console.error);
+    };
 
     incidentHub.incidentClosed = (incidentId) => {
-      if (!startedPromise) return
+      if (!startedPromise) return;
 
       return startedPromise
-        .then(() => connection.invoke('LeaveIncidentGroup', incidentId))
-        .catch(console.error)
-    }
+        .then(() => connection.invoke("LeaveIncidentGroup", incidentId))
+        .catch(console.error);
+    };
 
     incidentHub.subscribe = (group) => {
-      if (!startedPromise) return
+      if (!startedPromise) return;
 
       return startedPromise
-        .then(() => connection.invoke('Subscribe', group))
-        .catch(console.error)
-    }
+        .then(() => connection.invoke("Subscribe", group))
+        .catch(console.error);
+    };
 
     // incidentHub.sendMessage = (message) => {
     //   if (!startedPromise) return
@@ -114,11 +127,8 @@ export default {
     //     .then(() => connection.invoke('SendLiveChatMessage', message))
     //     .catch(console.error)
     // }
-  }
-}
-
-
-
+  },
+};
 
 // export default {
 //   install (Vue) {
@@ -193,22 +203,22 @@ export default {
 //         .then(() => { startedPromise = null })
 //     }
 
-      // Provide methods for components to send messages back to server
-      // Make sure no invocation happens until the connection is established
-    // incidentHub.incidentOpened = (incidentId) => {
-    //   if (!startedPromise) return
+// Provide methods for components to send messages back to server
+// Make sure no invocation happens until the connection is established
+// incidentHub.incidentOpened = (incidentId) => {
+//   if (!startedPromise) return
 
-    //   return startedPromise
-    //     .then(() => connection.invoke('JoinIncidentGroup', incidentId))
-    //     .catch(console.error)
-    // }
-    // incidentHub.incidentClosed = (incidentId) => {
-    //   if (!startedPromise) return
+//   return startedPromise
+//     .then(() => connection.invoke('JoinIncidentGroup', incidentId))
+//     .catch(console.error)
+// }
+// incidentHub.incidentClosed = (incidentId) => {
+//   if (!startedPromise) return
 
-    //   return startedPromise
-    //     .then(() => connection.invoke('LeaveIncidentGroup', incidentId))
-    //     .catch(console.error)
-    // }
+//   return startedPromise
+//     .then(() => connection.invoke('LeaveIncidentGroup', incidentId))
+//     .catch(console.error)
+// }
 
 //     incidentHub.sendMessage = (message) => {
 //       if (!startedPromise) return

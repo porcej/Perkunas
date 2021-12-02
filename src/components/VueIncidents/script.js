@@ -11,14 +11,14 @@ export default {
     url: {
       type: String,
       // default: "http://sfireweb2.alexgov.net/CADWebRelay/api/incidents",
-      default: "https://fire-173822vma.alexgov.net:5001/api/Dashboard/incidents",
+      default:
+        "https://fire-173822vma.alexgov.net:5001/api/Dashboard/incidents",
     },
 
     station: {
       type: String,
       required: true,
     },
-
   },
 
   data() {
@@ -33,9 +33,9 @@ export default {
     this.loadIncidents();
     // this.$incidentHub.$on('other-added', this.onOtherAdded);
     // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
-    this.$dashboardHub.$on('incident-added', this.onIncidentAdded);
-    this.$dashboardHub.$on('incident-updated', this.onIncidentUpdated);
-    this.$dashboardHub.$on('incident-unit-updated', this.onIncidentUnitUpdated);
+    this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
+    this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
+    this.$dashboardHub.$on("incident-unit-updated", this.onIncidentUnitUpdated);
   },
 
   destroyed() {
@@ -49,25 +49,28 @@ export default {
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
         // this.incidents.forEach((idx) => this.$incidentHub.incidentOpened(idx.id));
-        this.incidents.forEach((idx) => this.$dashboardHub.incidentOpened(idx.id));
+        this.incidents.forEach((idx) =>
+          this.$dashboardHub.incidentOpened(idx.id)
+        );
         // this.$incidentHub.incidentOpened
         console.log(data);
       });
     },
     formatTime(timeStr) {
       let dt = new Date(timeStr);
-
-      return `${this.padTime(dt.getHours())}:${this.padTime(dt.getMinutes())}`
+      return `${this.padTime(dt.getHours())}:${this.padTime(dt.getMinutes())}`;
     },
-    padTime(time){
+    padTime(time) {
       return time.toString().padStart(2, 0);
     },
-    colorUnit(id){
-      return `vwi__unit_status_${Utils.getUnitIncidentStatus(id)}`
+    colorUnit(id) {
+      return `vwi__unit_status_${Utils.getUnitIncidentStatus(id)}`;
     },
     onIncidentAdded(incident) {
       this.incidents.unshift(incident);
-      this.incidents.forEach((idx) => this.$dashboardHub.incidentOpened(idx.id));
+      this.incidents.forEach((idx) =>
+        this.$dashboardHub.incidentOpened(idx.id)
+      );
     },
     onIncidentUpdated(update) {
       this.incidents.forEach((incident) => {
@@ -75,22 +78,23 @@ export default {
           incident[update.field] = update.value;
         }
       });
-
     },
     onIncidentUnitUpdated(update) {
       this.incidents.forEach((incident) => {
         // console.log(`  *** |${typeOf(incident.id)}| - |${typeOf(msg.incidentId)}|`)
-        if (incident.id == update.incidentId){
-          
+        if (incident.id == update.incidentId) {
           let newUnit = true;
           incident.units.forEach((unit) => {
-            if (unit.radioName == update.unit.radioName){
+            if (unit.radioName == update.unit.radioName) {
               unit.statusId = update.unit.statusId;
               newUnit = false;
             }
           });
-          if (newUnit) { 
-            incident.units.push({'radioName': update.unit.radioName, 'statusId': update.unit.statusId});
+          if (newUnit) {
+            incident.units.push({
+              radioName: update.unit.radioName,
+              statusId: update.unit.statusId,
+            });
           }
         }
       });

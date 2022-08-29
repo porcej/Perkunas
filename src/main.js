@@ -10,6 +10,11 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
+// Import our configuration
+import config from "./config";
+
+Vue.prototype.$appConfig = config;
+
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
 // Optionally install the BootstrapVue icon components plugin
@@ -18,7 +23,8 @@ Vue.use(IconsPlugin);
 Vue.config.productionTip = false;
 
 // same as the Url the server listens to
-axios.defaults.baseURL = "http://sfireweb2.alexgov.net/CADWebRelay/";
+axios.defaults.baseURL = config.cad_url_base;
+
 // axios.defaults.withCredentials = true
 
 // Setup axios as the Vue default $http library
@@ -28,7 +34,7 @@ Vue.prototype.$http = axios;
 Vue.use(DashboardHub);
 Vue.prototype.startSignalR();
 Vue.prototype.$dashboardHub.JoinDashboard();
-// Vue.prototype.$incidentHub.subscribe('Incidents');
+// Vue.prototype.$incidentHub.subscribe("Incidents");
 // Vue.prototype.$incidentHub.subscribe('Units');
 
 new Vue({

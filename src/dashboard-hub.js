@@ -14,7 +14,7 @@ export default {
 
     Vue.prototype.startSignalR = () => {
       connection = new HubConnectionBuilder()
-        .withUrl("https://fire-173822vma.alexgov.net:5001/dashboardHub")
+        .withUrl(`${Vue.prototype.$appConfig.dashboard_hub_url}`)
         .configureLogging(LogLevel.Information)
         .build();
 

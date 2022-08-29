@@ -2,7 +2,10 @@
   <b-container fluid class="h-100 station-dashboard">
     <b-row class="h-100">
       <b-col cols="3" :style="wxBorderStyle">
-        <vue-incidents :station="$route.params.stationId" />
+        <vue-incidents
+          :url="$appConfig.incident_url", 
+          :station="$route.params.stationId"
+        />
       </b-col>
       <b-col :style="wxContentStyle">
         <!-- 900000ms = 15 minutes -->

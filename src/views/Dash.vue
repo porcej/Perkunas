@@ -7,7 +7,7 @@
       <b-col :style="wxContentStyle">
         <!-- 900000ms = 15 minutes -->
         <vue-telestaff
-          url="https://fire-173822vma.alexgov.net:5001/api/TelestaffProxy/"
+          :url="$appConfig.telestaff_url"
           :station="$route.params.stationId"
           :updateInterval="15 * 60 * 1000"
           title="Today"
@@ -16,7 +16,7 @@
       <b-col :style="wxContentStyle">
         <!-- 900000ms = 15 minutes -->
         <vue-telestaff
-          url="https://fire-173822vma.alexgov.net:5001/api/TelestaffProxy/"
+          :url="$appConfig.telestaff_url"
           :station="$route.params.stationId"
           date="tomorrow"
           :updateInterval="15 * 60 * 1000"
@@ -29,7 +29,7 @@
       </b-col>
       <b-col cols="8">
         <vue-weather
-          weatherUrl="https://fire-173822vma.alexgov.net:5001/api/WeatherForecast/"
+          :weatherUrl="$appConfig.weather_url"
           :updateInterval="900000"
           :hideHeader="true"
         />

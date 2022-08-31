@@ -10,9 +10,6 @@ export default {
   props: {
     url: {
       type: String,
-      // default: "http://sfireweb2.alexgov.net/CADWebRelay/api/incidents",
-      default:
-        "https://fire-173822vma.alexgov.net:5001/api/Dashboard/incidents",
     },
 
     station: {

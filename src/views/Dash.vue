@@ -9,20 +9,11 @@
       </b-col>
       <b-col :style="wxContentStyle">
         <!-- 900000ms = 15 minutes -->
-        <vue-telestaff
+        <vue-telestaff-swim
           :url="$appConfig.telestaff_url"
           :station="$route.params.stationId"
           :updateInterval="15 * 60 * 1000"
           title="Today"
-        />
-      </b-col>
-      <b-col :style="wxContentStyle">
-        <!-- 900000ms = 15 minutes -->
-        <vue-telestaff
-          :url="$appConfig.telestaff_url"
-          :station="$route.params.stationId"
-          date="tomorrow"
-          :updateInterval="15 * 60 * 1000"
         />
       </b-col>
     </b-row>
@@ -44,14 +35,14 @@
 <script>
 import VueWeather from "@/components/VueWeatherWidget";
 import VueClock from "@/components/VueDigitalClock";
-import VueTelestaff from "@/components/VueTelestaff";
+import VueTelestaffSwim from "@/components/VueTelestaffSwim";
 import VueIncidents from "@/components/VueIncidents";
 
 export default {
   components: {
     VueWeather,
     VueClock,
-    VueTelestaff,
+    VueTelestaffSwim,
     VueIncidents,
   },
   data() {

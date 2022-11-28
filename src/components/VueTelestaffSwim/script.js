@@ -1,5 +1,5 @@
 import Utils from "./utils";
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faStar,
@@ -52,7 +52,7 @@ export default {
     // Hours to display
     displayHours: {
       type: Number,
-      default: 20,
+      default: 24,
     },
 
     // Roster Date
@@ -93,30 +93,29 @@ export default {
     },
 
     widthStartByTime(person) {
-      const periodStartTime = DateTime.local().set({ hour: 7, minute: 0, second: 0, milliseconds: 0});
-      const periodEndTime = periodStartTime.plus({hours: this.displayHours})
-      const periodLength = periodEndTime.diff(periodStartTime).values.milliseconds;
-      console.log("Period Lenght: ", periodLength);
-      console.log("Period Starts:\n", periodStartTime);
-      console.log("Period Ends:\n", periodEndTime);
-
-
-      // # 11/27/2022 07:00 AM
-      const personStartTime = DateTime.fromFormat(person.startTime, "MM/dd/yyyy hh:mm a");
-      const personEndTime = DateTime.fromFormat(person.endTime, "MM/dd/yyyy hh:mm a");
-      const workingLength = personEndTime.diff(personStartTime).values.milliseconds;
-
-      console.log(person.name + " starts:\n" + person.startTime + "\n", personStartTime);
-
-      const deltaStart = personStartTime.diff(periodStartTime).values.milliseconds;
-
-
-      // const width = Math.round((workingLength/periodLength)*100);
-      // const startPosition = Math.round((deltaStart/periodLength) * 100);
-      const width = (workingLength/periodLength) * 100;
-      const startPosition = (deltaStart/periodLength) * 100;
-
-      console.log("=====   DELTA START TIME ====\n", deltaStart, "\n=============================");
+      const periodStartTime = DateTime.local().set({
+        hour: 7,
+        minute: 0,
+        second: 0,
+        milliseconds: 0,
+      });
+      const periodEndTime = periodStartTime.plus({ hours: this.displayHours });
+      const periodLength =
+        periodEndTime.diff(periodStartTime).values.milliseconds;
+      const personStartTime = DateTime.fromFormat(
+        person.startTime,
+        "MM/dd/yyyy hh:mm a"
+      );
+      const personEndTime = DateTime.fromFormat(
+        person.endTime,
+        "MM/dd/yyyy hh:mm a"
+      );
+      const workingLength =
+        personEndTime.diff(personStartTime).values.milliseconds;
+      const deltaStart =
+        personStartTime.diff(periodStartTime).values.milliseconds;
+      const width = (workingLength / periodLength) * 100;
+      const startPosition = (deltaStart / periodLength) * 100;
       return `width:${width}%; left:${startPosition}%;`;
     },
 

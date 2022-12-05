@@ -28,34 +28,11 @@ export default {
 
   mounted() {
     this.loadIncidents();
-    // Incident actions
+    // this.$incidentHub.$on('other-added', this.onOtherAdded);
+    // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
-    // this.$dashboardHub.$on(
-    //   "incident-field-changed",
-    //   this.onIncidentFieldChanged
-    // );
-    // this.$dashboardHub.$on(
-    //   "incident-unit-status-changed",
-    //   this.onIncidentUnitStatusChanged
-    // );
-    // this.$dashboardHub.$on(
-    //   "incident-comment-added",
-    //   this.onIncidentCommentAdded
-    // );
-    this.$dashboardHub.$on(
-      "incident-field-changed",
-      this.onIncidentUpdated
-    );
-    this.$dashboardHub.$on(
-      "incident-unit-status-changed",
-      this.onIncidentUpdated
-    );
-    this.$dashboardHub.$on("incident-comment-added", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-unit-updated", this.onIncidentUnitUpdated);
-    // Unit Actions
-    this.$dashboardHub.$on("unit-status-changed", this.onUnitStatusChanged);
-    this.$dashboardHub.$on("unit-home-changed", this.onUnitHomeChanged);
   },
 
   destroyed() {
@@ -69,11 +46,10 @@ export default {
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
         // this.incidents.forEach((idx) => this.$incidentHub.incidentOpened(idx.id));
-        this.incidents.forEach((idx) =>
-          this.$dashboardHub.incidentOpened(idx.id)
-        );
-        // this.$incidentHub.incidentOpened
-        console.log("Incident: ", data);
+        this.incidents.forEach((idx) => {
+          this.$dashboardHub.incidentOpened(idx.id);
+          console.log(`Incident ${idx.id} opened:`, idx);
+        });
       });
     },
     formatTime(timeStr) {

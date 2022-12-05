@@ -73,7 +73,7 @@ export default {
     // Your endpoint for weather data
     weatherUrl: {
       type: String,
-      default: "https://localhost:5001/api/WeatherForecast/",
+      default: "//localhost:5001/api/WeatherForecast/",
     },
   },
 

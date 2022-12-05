@@ -28,11 +28,34 @@ export default {
 
   mounted() {
     this.loadIncidents();
-    // this.$incidentHub.$on('other-added', this.onOtherAdded);
-    // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
+    // Incident actions
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
+    // this.$dashboardHub.$on(
+    //   "incident-field-changed",
+    //   this.onIncidentFieldChanged
+    // );
+    // this.$dashboardHub.$on(
+    //   "incident-unit-status-changed",
+    //   this.onIncidentUnitStatusChanged
+    // );
+    // this.$dashboardHub.$on(
+    //   "incident-comment-added",
+    //   this.onIncidentCommentAdded
+    // );
+    this.$dashboardHub.$on(
+      "incident-field-changed",
+      this.onIncidentUpdated
+    );
+    this.$dashboardHub.$on(
+      "incident-unit-status-changed",
+      this.onIncidentUpdated
+    );
+    this.$dashboardHub.$on("incident-comment-added", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-unit-updated", this.onIncidentUnitUpdated);
+    // Unit Actions
+    this.$dashboardHub.$on("unit-status-changed", this.onUnitStatusChanged);
+    this.$dashboardHub.$on("unit-home-changed", this.onUnitHomeChanged);
   },
 
   destroyed() {
@@ -50,7 +73,7 @@ export default {
           this.$dashboardHub.incidentOpened(idx.id)
         );
         // this.$incidentHub.incidentOpened
-        console.log(data);
+        console.log("Incident: ", data);
       });
     },
     formatTime(timeStr) {

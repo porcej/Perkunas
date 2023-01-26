@@ -1,10 +1,11 @@
-<template>
+ <template>
   <div class="vwi__incidents">
     <ul class="vwi__incidents_list">
       <li
         class="vwi__incident"
         v-for="incident in incidents"
         :key="incident.id"
+        @click="showAlert = true"
       >
         <div class="vwi__units">
           <span
@@ -31,6 +32,7 @@
           </span>
         </div>
         ---------------------------------------
+        <VueIncidentAlerts v-show="showAlert" :incident="incident" />
       </li>
     </ul>
   </div>

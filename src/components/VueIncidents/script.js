@@ -1,10 +1,12 @@
 import Utils from "./utils";
+import VueIncidentAlerts from "@/components/VueIncidentAlerts";
 
 export default {
   name: "VueIncidents",
 
   components: {
     // FontAwesomeIcon,
+    VueIncidentAlerts,
   },
 
   props: {
@@ -22,7 +24,9 @@ export default {
     return {
       loading: true,
       incidents: null,
+      units: null,
       error: null,
+      showAlert: false,
     };
   },
 
@@ -33,6 +37,11 @@ export default {
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-unit-updated", this.onIncidentUnitUpdated);
+    this.$dashboardHub.$on(
+      "incident-comment-added",
+      this.onIncidentCommentAdded
+    );
+    this.$dashboardHub.$on("unit-status-change", this.onUnitStatusChange);
   },
 
   destroyed() {
@@ -40,6 +49,9 @@ export default {
   },
 
   methods: {
+    alertAll: function (msg) {
+      alert(msg);
+    },
     loadIncidents() {
       return Utils.fetchIncidents({
         url: this.url,
@@ -47,7 +59,7 @@ export default {
         this.$set(this, "incidents", data.slice().reverse());
         // this.incidents.forEach((idx) => this.$incidentHub.incidentOpened(idx.id));
         this.incidents.forEach((idx) => {
-          this.$dashboardHub.incidentOpened(idx.id);
+          // this.$dashboardHub.incidentOpened(idx.id);
           console.log(`Incident ${idx.id} opened:`, idx);
         });
       });
@@ -62,11 +74,18 @@ export default {
     colorUnit(id) {
       return `vwi__unit_status_${Utils.getUnitIncidentStatus(id)}`;
     },
+    // Handle incoming messages
     onIncidentAdded(incident) {
-      this.incidents.unshift(incident);
-      this.incidents.forEach((idx) =>
-        this.$dashboardHub.incidentOpened(idx.id)
-      );
+      let thisIncident = this.incidents.filter((inc) => incident.id === inc.id);
+      if (thisIncident > 0) {
+        thisIncident = incident;
+      } else {
+        this.incidents.unshift(incident);
+      }
+
+      // this.incidents.forEach((idx) =>
+      //   // this.$dashboardHub.incidentOpened(idx.id)
+      // );
     },
     onIncidentUpdated(update) {
       this.incidents.forEach((incident) => {
@@ -76,22 +95,41 @@ export default {
       });
     },
     onIncidentUnitUpdated(update) {
+      console.log("Incident unit update:", update);
       this.incidents.forEach((incident) => {
         // console.log(`  *** |${typeOf(incident.id)}| - |${typeOf(msg.incidentId)}|`)
         if (incident.id == update.incidentId) {
-          let newUnit = true;
-          incident.units.forEach((unit) => {
-            if (unit.radioName == update.unit.radioName) {
-              unit.statusId = update.unit.statusId;
-              newUnit = false;
-            }
-          });
-          if (newUnit) {
-            incident.units.push({
-              radioName: update.unit.radioName,
-              statusId: update.unit.statusId,
+          if (incident.unitsAssigned == null) {
+            incident.unitsAssigned = [update.unit];
+          } else {
+            let newUnit = true;
+            incident.unitsAssigned.forEach((unit) => {
+              if (unit.radioName == update.unit.radioName) {
+                unit.statusId = update.unit.statusId;
+                newUnit = false;
+              }
             });
+            if (newUnit) {
+              incident.unitsAssigned.push({
+                radioName: update.unit.radioName,
+                statusId: update.unit.statusId,
+              });
+            }
           }
+        }
+      });
+    },
+    onIncidentCommentAdded(comment) {
+      console.log(
+        `Incident comment added to incident ${comment.incidentId}: `,
+        comment
+      );
+      this.incidents.forEach((incident) => {
+        if (incident.id == comment.incidentId) {
+          if (incident.comments == null) {
+            incident.comments = [];
+          }
+          incident.comments.push(comment.comment);
         }
       });
     },

@@ -1,7 +1,5 @@
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production'
-    ? '/Dashboard/'
-    : '/',
+  publicPath: process.env.NODE_ENV === "production" ? "/Dashboard/" : "/",
   devServer: {
     host: "FIRE-173822VMA.local",
     // https: true,

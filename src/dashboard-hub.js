@@ -36,9 +36,12 @@ export default {
       });
 
       connection.on("IncidentFieldChanged", (incidentId, field, value) => {
-        console.log("+++++++++++++++++++");
-        console.log(incidentId);
-        console.log(`Incident: ${incidentId} - ${field}: ${value}`);
+        console.log(
+          `++Incident #${incidentId} field change RXed:\n\tField:`,
+          field,
+          "\n\tValue:",
+          value
+        );
         dashboardHub.$emit("incident-updated", {
           incidentId: incidentId,
           field: field,
@@ -47,7 +50,7 @@ export default {
       });
 
       connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
-        console.log(`Incident Unit: ${incidentId} - ${unit}`);
+        console.log(`++Incident Unit Change RXed: ${incidentId}`, unit);
         dashboardHub.$emit("incident-unit-updated", {
           incidentId: incidentId,
           unit: unit,
@@ -55,13 +58,28 @@ export default {
       });
 
       connection.on("IncidentAdded", (incident) => {
-        console.log(incident);
         dashboardHub.$emit("incident-added", incident);
-        console.log("\t" + "*".repeat(72));
-        console.log(incident);
-        console.log("\t" + "*".repeat(72));
+        console.log(`+++Incident #${incident.id} added`, incident);
       });
 
+      connection.on("UnitStatusChanged", (radioName, statusId) => {
+        console.log(`++Unit Change RXed: ${radioName}`, statusId);
+        dashboardHub.$emit("unit-updated", {
+          radioName: radioName,
+          statusId: statusId,
+        });
+      });
+
+      connection.on("IncidentCommentAdded", (incidentId, comment) => {
+        console.log(
+          `++Comment added to incident ID ${incidentId} RXed`,
+          comment
+        );
+        dashboardHub.$emit("incident-comment-added", {
+          incidentId: incidentId,
+          comment: comment,
+        });
+      });
       // You need to call connection.start() to establish the connection but the client wont handle reconnecting for you!
       // Docs recommend listening onclose and handling it there.
       // This is the simplest of the strategies

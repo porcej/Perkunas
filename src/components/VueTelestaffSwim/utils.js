@@ -74,47 +74,40 @@ const utils = {
     )[0];
 
     let units = stationRoster["Unit"].filter(
-        (unit) => unit.title !== "{off roster}"
+      (unit) => unit.title !== "{off roster}"
     );
 
-    units.forEach(
-      (unit) => {
-        // let lastId = -1;
-        
-        const people = unit["Position"].filter((position) => position.isWorking);
-        let positions = {};
-        people.forEach(
-          (person) => {
-            if (!(person['id'] in positions)){
-              positions[person.id] = {
-                "title": person.title,
-                "people": []
-              };
-            }
-            positions[person['id']]['people'].push(person);
-          }
-        );
-        console.log("Position: ", positions);
-        unit["Position"] = positions;
-      }
-    );
-    console.log(units)
-      
-      // console.log(unit['Position']);
-      // const persons = unit["Position"].filter((position) => position.isWorking);
-      // let positions = []
-      // for (let position in persons){
-      //   if (position.id == lastId) {
-      //     positions.at(-1).push(position);
-      //   } else {
-      //     positions.push([position]);
-      //   }
-      // }
-      // unit["Position"] = positions;
+    units.forEach((unit) => {
+      // let lastId = -1;
+
+      const people = unit["Position"].filter((position) => position.isWorking);
+      let positions = {};
+      people.forEach((person) => {
+        if (!(person["id"] in positions)) {
+          positions[person.id] = {
+            title: person.title,
+            people: [],
+          };
+        }
+        positions[person["id"]]["people"].push(person);
+      });
+      console.log("Position: ", positions);
+      unit["Position"] = positions;
+    });
+    console.log(units);
+
+    // console.log(unit['Position']);
+    // const persons = unit["Position"].filter((position) => position.isWorking);
+    // let positions = []
+    // for (let position in persons){
+    //   if (position.id == lastId) {
+    //     positions.at(-1).push(position);
+    //   } else {
+    //     positions.push([position]);
+    //   }
     // }
-
-
-
+    // unit["Position"] = positions;
+    // }
 
     return {
       day: utils.getTodayOrDayName(shiftDate),

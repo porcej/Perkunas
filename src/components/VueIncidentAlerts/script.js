@@ -7,11 +7,14 @@ export default {
     // FontAwesomeIcon,
   },
 
-  props: {
-    incident: {
-      type: Object,
-    },
-  },
+  props: ["incidents", "showAlert"],
+  // props: {
+  //   // incidents: {
+  //   //   type: Object,
+  //   //   showModal: 
+  //   // },
+  //   []
+  // },
 
   destroyed() {
     // clearTimeout(this.timeout);
@@ -27,6 +30,9 @@ export default {
     },
     colorUnit(id) {
       return `vwi__unit_status_${Utils.getUnitIncidentStatus(id)}`;
+    },
+    closeAlert() {
+      this.$emit("close");
     },
   },
 };

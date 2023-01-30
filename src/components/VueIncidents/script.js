@@ -27,6 +27,7 @@ export default {
       units: null,
       error: null,
       showAlert: false,
+      alertedIncidents: [],
     };
   },
 
@@ -49,8 +50,11 @@ export default {
   },
 
   methods: {
-    alertAll: function (msg) {
-      alert(msg);
+    alertIncident: function (incident) {
+      this.alertedIncidents.push(incident);
+      this.showAlert = true;
+      console.log("Incident Alerted:")
+      console.log(incident);
     },
     loadIncidents() {
       return Utils.fetchIncidents({

@@ -1,21 +1,4 @@
-
-/* Incidnet List Vue */
-.vwi__incidents {
-    color: rgb(255, 255, 255);
-}
-
-ul.vwi__incidents_list {
-	width:  100%;
-	padding: 0; /* Remove padding */
-	margin: 0; /* Remove margins */
-}
-
-
-ul.vwi__incidents_list li {
-	list-style-type: none; /* Remove bullets */
-	padding: 0; /* Remove padding */
-	margin: 0; /* Remove margins */
-}
+/**/
 
 /* Units List Vue */
 div.vwi__units {

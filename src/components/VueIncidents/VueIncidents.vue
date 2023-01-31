@@ -1,6 +1,9 @@
 <template>
   <div class="vwi__incidents">
-    <VueIncidentAlerts :incidents="alertedIncidents" :showAlert="showAlert" />
+    <VueIncidentAlerts
+      :incidents="alertedIncidents"
+      @unalertIncident="unalertIncident"
+    />
     <ul class="vwi__incidents_list">
       <li
         class="vwi__incident"

@@ -53,8 +53,12 @@ export default {
     alertIncident: function (incident) {
       this.alertedIncidents.push(incident);
       this.showAlert = true;
-      console.log("Incident Alerted:")
-      console.log(incident);
+    },
+    unalertIncident (incident) {
+      const idx = this.alertedIncidents.indexOf(incident);
+      if (idx !== -1) {
+        this.alertedIncidents.splice(idx, 1);
+      }
     },
     loadIncidents() {
       return Utils.fetchIncidents({

@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="vwi__incidents">
     <ul class="vwi__incidents_list">
       <li

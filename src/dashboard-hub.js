@@ -62,6 +62,18 @@ export default {
         console.log(`+++Incident #${incident.id} added`, incident);
       });
 
+      connection.on("IncidentRemoved", (incidentId) => {
+        dashboardHub.$emit("incident-removed", {
+          incidentId: incidentId,
+        });
+      });
+
+      connection.on("IncidentsRemoved", (incidentIds) => {
+        dashboardHub.$emit("incidents-removed", {
+          incidentIds: incidentIds,
+        });
+      });
+
       connection.on("UnitStatusChanged", (radioName, statusId) => {
         console.log(`++Unit Change RXed: ${radioName}`, statusId);
         dashboardHub.$emit("unit-updated", {

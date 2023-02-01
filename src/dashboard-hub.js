@@ -99,7 +99,7 @@ export default {
         console.log(
           `++Unit Field Change Rxed: ${radioName}: ${field} => ${value}`
         );
-        dashboardHub.emit("unit-updated", {
+        dashboardHub.$emit("unit-updated", {
           radioName: radioName,
           field: field,
           value: value,

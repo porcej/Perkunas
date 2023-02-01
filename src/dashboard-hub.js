@@ -36,6 +36,7 @@ export default {
       });
 
       connection.on("IncidentFieldChanged", (incidentId, field, value) => {
+        field = field.charAt(0).toLowerCase() + field.slice(1);
         console.log(
           `++Incident #${incidentId} field change RXed:\n\tField:`,
           field,

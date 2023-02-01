@@ -1,11 +1,15 @@
- <template>
+<template>
   <div class="vwi__incidents">
+    <VueIncidentAlerts
+      :incidents="alertedIncidents"
+      @unalertIncident="unalertIncident"
+    />
     <ul class="vwi__incidents_list">
       <li
         class="vwi__incident"
         v-for="incident in incidents"
         :key="incident.id"
-        @click="showAlert = true"
+        @click="alertIncident(incident)"
       >
         <div class="vwi__units">
           <span
@@ -17,7 +21,7 @@
           </span>
         </div>
         <div class="vwi__title">
-          <span class="vwi__call_type"> {{ incident.incidentType }} </span>
+          <span class="vwi__call_type"> {{ incident.problem }} </span>
           <span class="vwi__radio_channel float-right">
             <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
             {{ incident.primaryTacChannel }}
@@ -32,7 +36,6 @@
           </span>
         </div>
         ---------------------------------------
-        <VueIncidentAlerts v-show="showAlert" :incident="incident" />
       </li>
     </ul>
   </div>

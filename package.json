@@ -17,10 +17,12 @@
     "core-js": "^3.6.5",
     "install": "^0.13.0",
     "jsonp": "^0.2.1",
+    "leaflet": "^1.9.3",
     "npm": "^7.19.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vue-weathericons": "github:porcej/vue-weathericons",
+    "vue2-leaflet": "^2.7.1",
     "weathericons": "^2.1.0"
   },
   "devDependencies": {

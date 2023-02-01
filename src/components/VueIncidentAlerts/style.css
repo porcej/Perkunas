@@ -1,30 +1,50 @@
+/**/
 
-/* Incidnet List Vue */
-.vwi__incidents {
-    color: rgb(255, 255, 255);
+#vwia__fullScreenAlert .modal-dialog {
+    max-width: 100%;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+    background-color: rgb(34, 34, 34);
 }
 
-ul.vwi__incidents_list {
-	width:  100%;
-	padding: 0; /* Remove padding */
-	margin: 0; /* Remove margins */
+#vwia__fullScreenAlert .modal-dialog .modal-content {
+	background-color: rgb(34, 34, 34);
+	color: rgb(250, 250, 250);
 }
 
-
-ul.vwi__incidents_list li {
-	list-style-type: none; /* Remove bullets */
-	padding: 0; /* Remove padding */
-	margin: 0; /* Remove margins */
+.vwia__mapbox .vwia__xstreet {
+	display: inline-block;
 }
+
+.vwia__incident {
+	max-width: 100%;
+	width: 100%;
+}
+/*div.modal-dialog {
+    max-width: 100%;
+    margin: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    display: flex;
+}*/
+
 
 /* Units List Vue */
-div.vwi__units {
+div.vwia__units {
 	display:  flex;
 	flex-flow:  row wrap;
 	justify-content: flex-start;
 }
 
-span.vwi__unit {
+span.vwia__unit {
 	display: inline-block;
 	text-align: center;
 	vertical-align: middle;
@@ -40,12 +60,12 @@ span.vwi__unit {
 	font-weight: bold;
 }
 
-.vwi__title {
+.vwia__title {
 	font-size: 1.5rem;
 	text-align: left;
 }
 
-.vwi__address {
+.vwia__address {
 	display: block;
 	margin: 2px 0;
 	font-size: 1.5rem;
@@ -54,25 +74,27 @@ span.vwi__unit {
 	text-align: left;
 }
 
-.vwi__city {
+.vwia__city {
 	color: #4a4a4a;
 }
 
-.vwi__unit_status_iq 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #33a02c !important;}
-.vwi__unit_status_av 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #b2df8a !important;}
-.vwi__unit_status_busy 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #e31a1c !important;}
-.vwi__unit_status_d 	{ color:#ffffff !important; border-color:#ffffff !important; background-color: #000000 !important;}
-.vwi__unit_status_er 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #fdbf6f !important;}
-.vwi__unit_status_st 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #e17f00 !important;}
-.vwi__unit_status_os 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #fb9a99 !important;}
-.vwi__unit_status_ai 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #ff0000 !important;}
-.vwi__unit_status_to 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #a6cee3 !important;}
-.vwi__unit_status_at 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #1f78b4 !important;}
-.vwi__unit_status_od 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
-.vwi__unit_status_ed 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #c0c0c0 !important;}
-.vwi__unit_status_ma 	{ color:#8000ff !important; border-color:#8000ff !important; background-color: #000000 !important;}
-.vwi__unit_status_d2 	{ color:#ffffff !important; border-color:#ffffff !important; background-color: #c0c0c0 !important;}
-.vwi__unit_status_e2 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #c0c0c0 !important;}
-.vwi__unit_status_o2 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
-.vwi__unit_status_off 	{ color:#000000 !important; border-color:#000000 !important; background-color: #e6e6e6 !important;}
-.vwi__unit_status_clear { color:#ffffff !important; border-color:#ffffff !important; background-color: #4a4a4a !important;}
+.vwia__unit_status_iq 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #33a02c !important;}
+.vwia__unit_status_av 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #b2df8a !important;}
+.vwia__unit_status_busy 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #e31a1c !important;}
+.vwia__unit_status_d 	{ color:#ffffff !important; border-color:#ffffff !important; background-color: #000000 !important;}
+.vwia__unit_status_er 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #fdbf6f !important;}
+.vwia__unit_status_st 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #e17f00 !important;}
+.vwia__unit_status_os 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #fb9a99 !important;}
+.vwia__unit_status_ai 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #ff0000 !important;}
+.vwia__unit_status_to 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #a6cee3 !important;}
+.vwia__unit_status_at 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #1f78b4 !important;}
+.vwia__unit_status_od 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
+.vwia__unit_status_ed 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #c0c0c0 !important;}
+.vwia__unit_status_ma 	{ color:#8000ff !important; border-color:#8000ff !important; background-color: #000000 !important;}
+.vwia__unit_status_d2 	{ color:#ffffff !important; border-color:#ffffff !important; background-color: #c0c0c0 !important;}
+.vwia__unit_status_e2 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #c0c0c0 !important;}
+.vwia__unit_status_o2 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
+.vwia__unit_status_off 	{ color:#000000 !important; border-color:#000000 !important; background-color: #e6e6e6 !important;}
+.vwia__unit_status_clear { color:#ffffff !important; border-color:#ffffff !important; background-color: #4a4a4a !important;}
+
+.leaflet-control-attribution.leaflet-control {display: none!important;}

@@ -27,6 +27,7 @@ export default {
       units: null,
       error: null,
       showAlert: false,
+      alertedIncidents: [],
     };
   },
 
@@ -49,8 +50,15 @@ export default {
   },
 
   methods: {
-    alertAll: function (msg) {
-      alert(msg);
+    alertIncident: function (incident) {
+      this.alertedIncidents.push(incident);
+      this.showAlert = true;
+    },
+    unalertIncident (incident) {
+      const idx = this.alertedIncidents.indexOf(incident);
+      if (idx !== -1) {
+        this.alertedIncidents.splice(idx, 1);
+      }
     },
     loadIncidents() {
       return Utils.fetchIncidents({

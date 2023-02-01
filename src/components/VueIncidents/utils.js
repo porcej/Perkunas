@@ -98,6 +98,17 @@ const utils = {
     return fetch(`${opts.url}`).then((resp) => resp.json());
   },
 
+  // fetchUnits(opts = {}) {
+  //   return fetch(`${opts.url}?currentStation=${opts.station}`).then((resp) =>
+  //     resp.json()
+  //   );
+  // },
+    fetchUnits(opts = {}) {
+    return fetch(`${opts.url}`).then((resp) =>
+      resp.json()
+    );
+  },
+
   fetchIncident(opts = {}) {
     // return fetch(`${opts.url}/${opts.id}/full?$eventid=${eventid}`)
     return fetch(`${opts.url}/${opts.id}/full`).then((resp) => resp.json());

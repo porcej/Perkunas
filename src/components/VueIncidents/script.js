@@ -10,10 +10,12 @@ export default {
   },
 
   props: {
-    url: {
+    incidentsUrl: {
       type: String,
     },
-
+    unitsUrl: {
+      type: String,
+    },
     station: {
       type: String,
       required: true,
@@ -25,6 +27,7 @@ export default {
       loading: true,
       incidents: null,
       units: null,
+      unitsToAlert: null,
       error: null,
       showAlert: false,
       alertedIncidents: [],
@@ -33,8 +36,7 @@ export default {
 
   mounted() {
     this.loadIncidents();
-    // this.$incidentHub.$on('other-added', this.onOtherAdded);
-    // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
+    this.loadUnits();
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-removed", this.onIncidentRemoved);
@@ -44,7 +46,7 @@ export default {
       "incident-comment-added",
       this.onIncidentCommentAdded
     );
-    this.$dashboardHub.$on("unit-status-change", this.onUnitStatusChange);
+    this.$dashboardHub.$on("unit-updated", this.onUnitUpdated);
   },
 
   destroyed() {
@@ -56,7 +58,7 @@ export default {
       this.alertedIncidents.push(incident);
       this.showAlert = true;
     },
-    unalertIncident (incident) {
+    unalertIncident(incident) {
       const idx = this.alertedIncidents.indexOf(incident);
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
@@ -64,13 +66,24 @@ export default {
     },
     loadIncidents() {
       return Utils.fetchIncidents({
-        url: this.url,
+        url: this.incidentsUrl,
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
         this.incidents.forEach((idx) => {
           // this.$dashboardHub.incidentOpened(idx.id);
           console.log(`Incident ${idx.id} opened:`, idx);
         });
+      });
+    },
+    loadUnits() {
+      return Utils.fetchUnits({
+        url: this.unitsUrl,
+      }).then((data) => {
+        this.$set(this, "units", data);
+        this.units.forEach((udx) => {
+          console.log(`Tracking ${udx.radioName} unit.`);
+        });
+        this.unitsToAlert = this.units.filter(udx => udx.currentStation === this.station).map(udx => udx.radioName);
       });
     },
     formatTime(timeStr) {
@@ -154,6 +167,41 @@ export default {
           incident.comments.push(comment.comment);
         }
       });
+    },
+    onUnitUpdated(update) {
+      const thisUnit = this.unitsToAlert.filter(
+        (udx) => udx.radioName === update.radioName
+      );
+      console.log(`This unit: ${thisUnit}`, thisUnit);
+      // Check if we have to add this to the alerts list
+      if (update.field === "currentStation") {
+        if (update.value === this.station){
+          // Ensure we 
+        }
+      }
+
+      // console.log("UNIT UPDATED RXED \n UNIT UPDATED RXED", update);
+      // 
+      // console.log(`=+=+ ${update.radioName}: ${thisUnit}`);
+      // // // Handle add/remove alerting unit
+      // // if (update.field == 'currentStation') {
+      // //   if (value == this.station) {
+
+      // //   }
+      // // }
+      // // if (this.unitsToAlert == null) {
+
+      // // } else{
+
+      // //   let newUnit = true;
+      // //   this.unitsToAlert.forEach((unit) => {
+      // //     if (unit.radioName == update.radioName) {
+      // //       unit[update.field] = update.value;
+      // //       newUnit = false;
+      // //     }
+      // //   });
+      // //   if (newUnit &&  )
+      // // }
     },
   },
 };

@@ -37,6 +37,8 @@ export default {
     // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
+    this.$dashboardHub.$on("incident-removed", this.onIncidentRemoved);
+    this.$dashboardHub.$on("incidents-removed", this.onIncidentsRemoved);
     this.$dashboardHub.$on("incident-unit-updated", this.onIncidentUnitUpdated);
     this.$dashboardHub.$on(
       "incident-comment-added",
@@ -65,7 +67,6 @@ export default {
         url: this.url,
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
-        // this.incidents.forEach((idx) => this.$incidentHub.incidentOpened(idx.id));
         this.incidents.forEach((idx) => {
           // this.$dashboardHub.incidentOpened(idx.id);
           console.log(`Incident ${idx.id} opened:`, idx);
@@ -90,10 +91,23 @@ export default {
       } else {
         this.incidents.unshift(incident);
       }
-
-      // this.incidents.forEach((idx) =>
-      //   // this.$dashboardHub.incidentOpened(idx.id)
-      // );
+    },
+    onIncidentRemoved(incidentId) {
+      console.log(`Incident ${incidentId} removed`);
+      const thisIncident = this.incidents.filter(
+        (inc) => incidentId === inc.id
+      );
+      const idx = this.incidents.indexOf(thisIncident);
+      if (idx !== -1) {
+        this.incidents.splice(idx, 1);
+      }
+    },
+    onIncidentsRemoved(incidentIds) {
+      console.log("Removing incidents...");
+      incidentIds.forEach((incidentId) => {
+        this.onIncidentRemoved(incidentId);
+      });
+      console.log("...Incidents removed.");
     },
     onIncidentUpdated(update) {
       this.incidents.forEach((incident) => {

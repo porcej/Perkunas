@@ -20,6 +20,10 @@ export default {
       type: String,
       required: true,
     },
+    alertForAllIncidents: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -55,7 +59,13 @@ export default {
 
   methods: {
     alertIncident(incident) {
-      const alertedAlready = this.incidents.includes(incident);
+      console.log(
+        "***************************************\n",
+        `**** Alert Requested for Incident ${incident.masterIncidentNumber} `,
+        incident,
+        "\n***************************************\n"
+      );
+      const alertedAlready = this.alertedIncidents.includes(incident);
       if (!alertedAlready) {
         this.alertedIncidents.push(incident);
         this.showAlert = true;
@@ -110,16 +120,18 @@ export default {
         this.incidents[idx] = incident;
       } else {
         idx = this.incidents.unshift(incident);
-        console.log(`******************** idx: ${idx}`);
       }
-      const alertedUnits = incident.unitsAssigned.filter((udx) =>
-        this.unitsToAlert.includes(udx.radioName)
-      );
-      if (alertedUnits.length > 0) {
+      if (this.alertForAllIncidents) {
         this.alertIncident(this.incidents[idx]);
-        alertedUnits.forEach((udx) =>
-          console.log(`**** Alerted on ${udx} ****`)
+      } else {
+        const alertedUnits = incident.unitsAssigned.filter((udx) =>
+          this.unitsToAlert.includes(udx.radioName)
         );
+        if (alertedUnits.length !== -1) {
+          alertedUnits.forEach((udx) =>
+            console.log(`**** Alerted on ${udx} ****`)
+          );
+        }
       }
     },
     onIncidentRemoved(incidentId) {

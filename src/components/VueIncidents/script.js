@@ -155,9 +155,9 @@ export default {
         const udx = this.incidents[idx].unitsAssigned.findIndex(
           (unit) => unit.radioName === update.unit.radioName
         );
-        if (udx < 1) {
+        if (udx === -1) {
           // We don't have the unit... add it and check if we need to alert
-          this.incidents[idx].unitsAssigned = [update.unit];
+          this.incidents[idx].unitsAssigned.push(update.unit);
           const adx = this.unitsToAlert.findIndex(
             (unit) => update.unit.radioName == unit
           );
@@ -168,7 +168,7 @@ export default {
         } else {
           // Oh good, we have the call and the unit, lets update
           for (const [key, value] of Object.entries(update.unit)) {
-            this.incidents[idx].alertedUnits[udx][key] = value;
+            this.incidents[idx].unitsAssigned[udx][key] = value;
           }
         }
       }

@@ -112,7 +112,7 @@ export default {
       const alertedUnits = incident.unitsAssigned.filter((udx) =>
         this.unitsToAlert.includes(udx.radioName)
       );
-      if (alertedUnits.length >= 0) {
+      if (alertedUnits.length > 0) {
         this.alertIncident(this.incidents[idx]);
         alertedUnits.forEach((udx) =>
           console.log(`**** Alerted on ${udx} ****`)
@@ -142,28 +142,55 @@ export default {
     },
     onIncidentUnitUpdated(update) {
       console.log("Incident unit update:", update);
-      this.incidents.forEach((incident) => {
-        // console.log(`  *** |${typeOf(incident.id)}| - |${typeOf(msg.incidentId)}|`)
-        if (incident.id == update.incidentId) {
-          if (incident.unitsAssigned == null) {
-            incident.unitsAssigned = [update.unit];
-          } else {
-            let newUnit = true;
-            incident.unitsAssigned.forEach((unit) => {
-              if (unit.radioName == update.unit.radioName) {
-                unit.statusId = update.unit.statusId;
-                newUnit = false;
-              }
-            });
-            if (newUnit) {
-              incident.unitsAssigned.push({
-                radioName: update.unit.radioName,
-                statusId: update.unit.statusId,
-              });
-            }
+      // Get the incident index
+      const idx = this.incidents.findIndex(
+        (inc) => inc.id === update.incidentId
+      );
+      if (idx >= 0) {
+        // We have a valid index so we must have the incident
+        // Get the assigned unit's index
+        const udx = this.incidents[idx].unitsAssigned.findIndex(
+          (unit) => unit.radioName === update.unit.radioName
+        );
+        if (udx < 1) {
+          // We don't have the unit... add it and check if we need to alert
+          this.incidents[idx].unitsAssigned = [update.unit];
+          const adx = this.unitsToAlert.findIndex(
+            (unit) => update.unit.radioName == unit
+          );
+          if (adx >= 0) {
+            this.alertIncident(this.incidents[idx]);
+            console.log(`++++ Alerted on ${update.unit.radioName} ++++`);
+          }
+        } else {
+          // Oh good, we have the call and the unit, lets update
+          for (const [key, value] of Object.entries(update.unit)) {
+            this.incidents[idx].alertedUnits[udx][key] = value;
           }
         }
-      });
+      }
+      // this.incidents.forEach((incident) => {
+      //   // console.log(`  *** |${typeOf(incident.id)}| - |${typeOf(msg.incidentId)}|`)
+      //   if (incident.id == update.incidentId) {
+      //     if (incident.unitsAssigned == null) {
+      //       incident.unitsAssigned = [update.unit];
+      //     } else {
+      //       let newUnit = true;
+      //       incident.unitsAssigned.forEach((unit) => {
+      //         if (unit.radioName == update.unit.radioName) {
+      //           unit.statusId = update.unit.statusId;
+      //           newUnit = false;
+      //         }
+      //       });
+      //       if (newUnit) {
+      //         incident.unitsAssigned.push({
+      //           radioName: update.unit.radioName,
+      //           statusId: update.unit.statusId,
+      //         });
+      //       }
+      //     }
+      //   }
+      // });
     },
     onIncidentCommentAdded(comment) {
       console.log(

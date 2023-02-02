@@ -1,7 +1,11 @@
 
 /* Incidnet List Vue */
 .vwi__incidents {
-    color: rgb(255, 255, 255);
+/*    color: rgb(255, 255, 255);*/
+	color: hsl(0, 0%, 85%);
+	width: 100%;
+	padding: 0; /* Remove padding */
+	margin: 0; /* Remove margins */
 }
 
 ul.vwi__incidents_list {
@@ -13,8 +17,21 @@ ul.vwi__incidents_list {
 
 ul.vwi__incidents_list li {
 	list-style-type: none; /* Remove bullets */
-	padding: 0; /* Remove padding */
+	padding: 5px 10px; /* Remove padding */
 	margin: 0; /* Remove margins */
+}
+
+ul.vwi__incidents_list li:nth-child(even) {
+	background-color: hsl(215, 10%, 20%);
+}
+
+ul.vwi__incidents_list li:nth-child(even):before {
+	background-color: hsl(215, 10%, 20%);
+	position: absolute;
+	height: 100%;
+	width: 5px;
+	left: -5px;
+	z-index: -1;
 }
 
 /* Units List Vue */

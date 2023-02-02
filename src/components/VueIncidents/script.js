@@ -24,6 +24,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    alertTimeOut: {
+      type: Number,
+      default: 120,
+    },
   },
 
   data() {
@@ -35,6 +39,7 @@ export default {
       error: null,
       showAlert: false,
       alertedIncidents: [],
+      alertCounters: {},
     };
   },
 
@@ -64,6 +69,20 @@ export default {
   },
 
   methods: {
+    alertTimer () {
+      if (this.countDown > 0) {
+        setTimeout(() => {
+          Object.keys(this.alertCounters).forEach((cdx) => {
+            if (this.alertCounters[cdx] > this.alertTimeOut){
+              this.unalertIncident(cdx);
+            } else {
+              this.alertCounters[cdx]++;
+            }
+          });
+          this.alertTimer()
+          }, 1000)
+        }
+    },
     alertIncident(incident) {
       console.log(
         "***************************************\n",
@@ -77,11 +96,16 @@ export default {
         this.showAlert = true;
       }
     },
+    dispatchUnit(incident) {
+      this.alertIncident(incident);
+      this.alertCounters[incident.id] = 0;
+    },
     unalertIncident(incident) {
       const idx = this.alertedIncidents.indexOf(incident);
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
       }
+      delete this.alertCounters[incident.id];
     },
     loadIncidents() {
       return Utils.fetchIncidents({
@@ -90,7 +114,10 @@ export default {
         this.$set(this, "incidents", data.slice().reverse());
         this.incidents.forEach((idx) => {
           // this.$dashboardHub.incidentOpened(idx.id);
-          console.log(`Incident ${idx.id} opened:`, idx);
+          console.log(
+            `Incident ${idx.masterIncidentNumber} with ${idx.id} opened:`,
+            idx
+          );
         });
       });
     },
@@ -128,7 +155,7 @@ export default {
         idx = this.incidents.unshift(incident);
       }
       if (this.alertForAllIncidents) {
-        this.alertIncident(this.incidents[idx]);
+        this.dispatchUnit(this.incidents[idx]);
       } else {
         const alertedUnits = incident.unitsAssigned.filter((udx) =>
           this.unitsToAlert.includes(udx.radioName)
@@ -180,7 +207,7 @@ export default {
             (unit) => update.unit.radioName == unit
           );
           if (adx >= 0) {
-            this.alertIncident(this.incidents[idx]);
+            this.dispatchUnit(this.incidents[idx]);
             console.log(`++++ Alerted on ${update.unit.radioName} ++++`);
           }
         } else {

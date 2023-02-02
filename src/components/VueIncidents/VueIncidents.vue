@@ -35,7 +35,6 @@
             {{ formatTime(incident.incidentStartDateTime) }}
           </span>
         </div>
-        ---------------------------------------
       </li>
     </ul>
   </div>

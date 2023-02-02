@@ -45,9 +45,12 @@
 
 <script>
 export default {
-  name: "HelloDashboard",
+  name: "DashboardIndex",
   props: {
     msg: String,
+  },
+  created() {
+    document.title = "Station Index";
   },
 };
 </script>

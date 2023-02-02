@@ -55,8 +55,11 @@ export default {
 
   methods: {
     alertIncident(incident) {
-      this.alertedIncidents.push(incident);
-      this.showAlert = true;
+      const alertedAlready = this.incidents.includes(incident);
+      if (!alertedAlready) {
+        this.alertedIncidents.push(incident);
+        this.showAlert = true;
+      }
     },
     unalertIncident(incident) {
       const idx = this.alertedIncidents.indexOf(incident);

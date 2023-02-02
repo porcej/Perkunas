@@ -54,7 +54,7 @@ export default {
   },
 
   methods: {
-    alertIncident: function (incident) {
+    alertIncident(incident) {
       this.alertedIncidents.push(incident);
       this.showAlert = true;
     },
@@ -80,10 +80,9 @@ export default {
         url: this.unitsUrl,
       }).then((data) => {
         this.$set(this, "units", data);
-        this.units.forEach((udx) => {
-          console.log(`Tracking ${udx.radioName} unit.`);
-        });
-        this.unitsToAlert = this.units.filter(udx => udx.currentStation === this.station).map(udx => udx.radioName);
+        this.unitsToAlert = this.units
+          .filter((udx) => udx.currentStation === this.station)
+          .map((udx) => udx.radioName);
       });
     },
     formatTime(timeStr) {
@@ -98,21 +97,33 @@ export default {
     },
     // Handle incoming messages
     onIncidentAdded(incident) {
-      let thisIncident = this.incidents.filter((inc) => incident.id === inc.id);
-      if (thisIncident > 0) {
-        thisIncident = incident;
+      console.log(
+        `============== Incident Added ============== \n=\t`,
+        incident,
+        "\n============================================"
+      );
+      let idx = this.incidents.findIndex((inc) => incident.id === inc.id);
+      if (idx >= 0) {
+        this.incidents[idx] = incident;
       } else {
-        this.incidents.unshift(incident);
+        idx = this.incidents.unshift(incident);
+        console.log(`******************** idx: ${idx}`);
+      }
+      const alertedUnits = incident.unitsAssigned.filter((udx) =>
+        this.unitsToAlert.includes(udx.radioName)
+      );
+      if (alertedUnits.length >= 0) {
+        this.alertIncident(this.incidents[idx]);
+        alertedUnits.forEach((udx) =>
+          console.log(`**** Alerted on ${udx} ****`)
+        );
       }
     },
     onIncidentRemoved(incidentId) {
-      console.log(`Incident ${incidentId} removed`);
-      const thisIncident = this.incidents.filter(
-        (inc) => incidentId === inc.id
-      );
-      const idx = this.incidents.indexOf(thisIncident);
+      const idx = this.incidents.findIndex((inc) => incidentId === inc.id);
       if (idx !== -1) {
         this.incidents.splice(idx, 1);
+        console.log(`Incident ${incidentId} removed`);
       }
     },
     onIncidentsRemoved(incidentIds) {
@@ -169,39 +180,30 @@ export default {
       });
     },
     onUnitUpdated(update) {
-      const thisUnit = this.unitsToAlert.filter(
-        (udx) => udx.radioName === update.radioName
+      const udx = this.units.findIndex(
+        (udx) => udx.radioName == update.radioName
       );
-      console.log(`This unit: ${thisUnit}`, thisUnit);
-      // Check if we have to add this to the alerts list
+      if (udx !== -1) {
+        // Update unit if we found it
+        this.units[udx][update.field] = update.value;
+      } else {
+        // Add data to new unit if we could not find it
+        this.units.push({
+          radioName: update.radioName,
+          [update.field]: update.values,
+        });
+      }
+      // Handle updates to alerting
       if (update.field === "currentStation") {
-        if (update.value === this.station){
-          // Ensure we 
+        const sdx = this.unitsToAlert.findIndex(
+          (udx) => udx.radioName === update.radioName
+        );
+        if (update.value === this.station && sdx === -1) {
+          this.unitsToAlert.push(update.radioName);
+        } else if (update.value !== this.station && sdx !== -1) {
+          this.unitsToAlert.splice(sdx, 1);
         }
       }
-
-      // console.log("UNIT UPDATED RXED \n UNIT UPDATED RXED", update);
-      // 
-      // console.log(`=+=+ ${update.radioName}: ${thisUnit}`);
-      // // // Handle add/remove alerting unit
-      // // if (update.field == 'currentStation') {
-      // //   if (value == this.station) {
-
-      // //   }
-      // // }
-      // // if (this.unitsToAlert == null) {
-
-      // // } else{
-
-      // //   let newUnit = true;
-      // //   this.unitsToAlert.forEach((unit) => {
-      // //     if (unit.radioName == update.radioName) {
-      // //       unit[update.field] = update.value;
-      // //       newUnit = false;
-      // //     }
-      // //   });
-      // //   if (newUnit &&  )
-      // // }
     },
   },
 };

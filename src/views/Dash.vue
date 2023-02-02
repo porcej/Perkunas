@@ -1,7 +1,7 @@
 <template>
   <b-container fluid class="h-100 station-dashboard">
     <b-row class="h-100">
-      <b-col cols="3" :style="wxBorderStyle">
+      <b-col cols="3" :style="wxBorderStyle" class="incident_column">
         <vue-incidents
           :url="$appConfig.incident_url"
           :station="$route.params.stationId"
@@ -71,6 +71,9 @@ export default {
 };
 </script>
 <style>
+.incident_column {
+  padding: 0;
+}
 .station-dashboard {
   font-family: "Frutiger CE 55 Roman";
   /*font-family: "Frutiger CE 65 Bold";*/

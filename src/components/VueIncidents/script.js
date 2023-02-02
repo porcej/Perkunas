@@ -38,6 +38,12 @@ export default {
     };
   },
 
+  created() {
+    document.title = this.alertForAllIncidents
+      ? `${this.station}-ALL`
+      : `${this.station}`;
+  },
+
   mounted() {
     this.loadIncidents();
     this.loadUnits();

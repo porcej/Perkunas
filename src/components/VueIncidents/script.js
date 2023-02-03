@@ -91,11 +91,15 @@ export default {
     },
     // Handle incoming messages
     onIncidentAdded(incident) {
-      let thisIncident = this.incidents.filter((inc) => incident.id === inc.id);
-      if (thisIncident > 0) {
-        thisIncident = incident;
-      } else {
+      let thisIncidentIndex = this.incidents.indexOf(
+        (inc) => incident.id === inc.id
+      );
+      if (thisIncidentIndex === -1) {
+        // We don't have a record of this incidnet, lets add it new
         this.incidents.unshift(incident);
+      } else {
+        // We have a record of this incident, lets update it
+        this.incidents[thisIncidentIndex] = incident;
       }
     },
     onIncidentRemoved(incidentId) {

@@ -80,6 +80,7 @@ export default {
         console.log("Connected to hub.");
         this.$dashboardHub.JoinDashboard();
         this.loadIncidents();
+        this.loadUnits();
       } else {
         console.log("Connecting...");
         setTimeout(() => {
@@ -90,19 +91,19 @@ export default {
     onDisconnect() {
       this.initiHubConnection();
     },
-    alertTimer () {
+    alertTimer() {
       if (this.countDown > 0) {
         setTimeout(() => {
           Object.keys(this.alertCounters).forEach((cdx) => {
-            if (this.alertCounters[cdx] > this.alertTimeOut){
+            if (this.alertCounters[cdx] > this.alertTimeOut) {
               this.unalertIncident(cdx);
             } else {
               this.alertCounters[cdx]++;
             }
           });
-          this.alertTimer()
-          }, 1000)
-        }
+          this.alertTimer();
+        }, 1000);
+      }
     },
     alertIncident(incident) {
       console.log(
@@ -177,12 +178,13 @@ export default {
         this.incidents[thisIncidentIndex] = incident;
       }
       if (this.alertForAllIncidents) {
-        this.dispatchUnit(this.incidents[idx]);
+        this.dispatchUnit(this.incidents[thisIncidentIndex]);
       } else {
         const alertedUnits = incident.unitsAssigned.filter((udx) =>
           this.unitsToAlert.includes(udx.radioName)
         );
         if (alertedUnits.length !== -1) {
+          this.dispatchUnit(this.incidents[thisIncidentIndex]);
           alertedUnits.forEach((udx) =>
             console.log(`**** Alerted on ${udx} ****`)
           );

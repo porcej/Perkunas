@@ -44,7 +44,7 @@ Vue.prototype.$http = axios;
 // Vue.use(IncidentHub);
 Vue.use(DashboardHub);
 Vue.prototype.startSignalR();
-Vue.prototype.$dashboardHub.JoinDashboard();
+// Vue.prototype.$dashboardHub.JoinDashboard();
 // Vue.prototype.$incidentHub.subscribe("Incidents");
 // Vue.prototype.$incidentHub.subscribe('Units');
 

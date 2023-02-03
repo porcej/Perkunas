@@ -18,6 +18,10 @@ export default {
       type: String,
       required: true,
     },
+    reconnectTicker: {
+      type: Number,
+      default: 2000,
+    },
   },
 
   data() {
@@ -38,9 +42,11 @@ export default {
   },
 
   mounted() {
-    this.loadIncidents();
+    this.initiHubConnection();
     // this.$incidentHub.$on('other-added', this.onOtherAdded);
     // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
+    this.$dashboardHub.$on("connected", this.onConnect);
+    this.$dashboardHub.$on("disconnected", this.onDisconnect);
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-removed", this.onIncidentRemoved);
@@ -58,6 +64,21 @@ export default {
   },
 
   methods: {
+    initiHubConnection() {
+      if (this.$dashboardHub.state() === "Connected") {
+        console.log("Connected to hub.");
+        this.$dashboardHub.JoinDashboard();
+        this.loadIncidents();
+      } else {
+        console.log("Connecting...");
+        setTimeout(() => {
+          this.initiHubConnection();
+        }, this.reconnectTicker);
+      }
+    },
+    onDisconnect() {
+      this.initiHubConnection();
+    },
     alertIncident(incident) {
       this.alertedIncidents.push(incident);
       this.showAlert = true;

@@ -131,6 +131,10 @@ export default {
         });
     };
 
+    dashboardHub.state = () => {
+      return connection.state;
+    };
+
     // Provide methods for components to send messages back to server
     // Make sure no invocation happens until the connection is established
     dashboardHub.incidentOpened = (incidentId) => {

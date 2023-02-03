@@ -105,7 +105,9 @@ export default {
         });
         return startedPromise;
       }
+      dashboardHub.$emit("connected");
       connection.onclose(() => {
+        dashboardHub.$emit("disconnected");
         if (!manuallyClosed) start();
       });
 

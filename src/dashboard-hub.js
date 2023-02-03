@@ -56,6 +56,16 @@ export default {
           incidentId: incidentId,
           unit: unit,
         });
+        const radioName = unit.radioName;
+        for (const [key, value] of Object.entries(unit)) {
+          if (key !== "radioName") {
+            dashboardHub.$emit("unit-updated", {
+              radioName: radioName,
+              field: key,
+              value: value,
+            });
+          }
+        }
       });
 
       connection.on("IncidentAdded", (incident) => {
@@ -79,7 +89,20 @@ export default {
         console.log(`++Unit Change RXed: ${radioName}`, statusId);
         dashboardHub.$emit("unit-updated", {
           radioName: radioName,
-          statusId: statusId,
+          field: "statusId",
+          value: statusId,
+        });
+      });
+
+      connection.on("UnitFieldChanged", (radioName, field, value) => {
+        field = field.charAt(0).toLowerCase() + field.slice(1);
+        console.log(
+          `++Unit Field Change Rxed: ${radioName}: ${field} => ${value}`
+        );
+        dashboardHub.$emit("unit-updated", {
+          radioName: radioName,
+          field: field,
+          value: value,
         });
       });
 

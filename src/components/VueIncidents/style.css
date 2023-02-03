@@ -8,6 +8,15 @@
 	margin: 0; /* Remove margins */
 }
 
+.vwi__call_info {
+	text-align: left;
+	font-size: 1.5rem;
+}
+
+span.vwi__radio_channel {
+	text-align: left;
+}
+
 ul.vwi__incidents_list {
 	width:  100%;
 	padding: 0; /* Remove padding */

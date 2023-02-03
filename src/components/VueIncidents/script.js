@@ -91,14 +91,16 @@ export default {
     },
     // Handle incoming messages
     onIncidentAdded(incident) {
-      let thisIncidentIndex = this.incidents.indexOf(
+      let thisIncidentIndex = this.incidents.findIndex(
         (inc) => incident.id === inc.id
       );
       if (thisIncidentIndex === -1) {
         // We don't have a record of this incidnet, lets add it new
         this.incidents.unshift(incident);
+        console.log(`Incident ${incident.id} opened:`, incident);
       } else {
         // We have a record of this incident, lets update it
+        console.log(`Incident ${incident.id} reopened:`, incident);
         this.incidents[thisIncidentIndex] = incident;
       }
     },

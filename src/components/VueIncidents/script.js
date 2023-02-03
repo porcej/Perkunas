@@ -58,11 +58,11 @@ export default {
   },
 
   methods: {
-    alertIncident: function (incident) {
+    alertIncident(incident) {
       this.alertedIncidents.push(incident);
       this.showAlert = true;
     },
-    unalertIncident (incident) {
+    unalertIncident(incident) {
       const idx = this.alertedIncidents.indexOf(incident);
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);

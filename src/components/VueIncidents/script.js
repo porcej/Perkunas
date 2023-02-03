@@ -20,6 +20,10 @@ export default {
       type: String,
       required: true,
     },
+    reconnectTicker: {
+      type: Number,
+      default: 2000,
+    },
     alertForAllIncidents: {
       type: Boolean,
       default: false,
@@ -50,8 +54,10 @@ export default {
   },
 
   mounted() {
-    this.loadIncidents();
-    this.loadUnits();
+    this.initiHubConnection();
+    // this.$incidentHub.$on('other-added', this.onOtherAdded);
+    // this.$incidentHub.$on('incident-added', this.onIncidentAdded);
+    this.$dashboardHub.$on("disconnected", this.onDisconnect);
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);
     this.$dashboardHub.$on("incident-removed", this.onIncidentRemoved);
@@ -69,19 +75,35 @@ export default {
   },
 
   methods: {
-    alertTimer () {
+    initiHubConnection() {
+      if (this.$dashboardHub.state() === "Connected") {
+        console.log("Connected to hub.");
+        this.$dashboardHub.JoinDashboard();
+        this.loadIncidents();
+        this.loadUnits();
+      } else {
+        console.log("Connecting...");
+        setTimeout(() => {
+          this.initiHubConnection();
+        }, this.reconnectTicker);
+      }
+    },
+    onDisconnect() {
+      this.initiHubConnection();
+    },
+    alertTimer() {
       if (this.countDown > 0) {
         setTimeout(() => {
           Object.keys(this.alertCounters).forEach((cdx) => {
-            if (this.alertCounters[cdx] > this.alertTimeOut){
+            if (this.alertCounters[cdx] > this.alertTimeOut) {
               this.unalertIncident(cdx);
             } else {
               this.alertCounters[cdx]++;
             }
           });
-          this.alertTimer()
-          }, 1000)
-        }
+          this.alertTimer();
+        }, 1000);
+      }
     },
     alertIncident(incident) {
       console.log(
@@ -156,12 +178,13 @@ export default {
         this.incidents[thisIncidentIndex] = incident;
       }
       if (this.alertForAllIncidents) {
-        this.dispatchUnit(this.incidents[idx]);
+        this.dispatchUnit(this.incidents[thisIncidentIndex]);
       } else {
         const alertedUnits = incident.unitsAssigned.filter((udx) =>
           this.unitsToAlert.includes(udx.radioName)
         );
         if (alertedUnits.length !== -1) {
+          this.dispatchUnit(this.incidents[thisIncidentIndex]);
           alertedUnits.forEach((udx) =>
             console.log(`**** Alerted on ${udx} ****`)
           );

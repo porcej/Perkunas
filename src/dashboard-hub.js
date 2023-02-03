@@ -1,4 +1,4 @@
-import { HubConnectionBuilder, LogLevel } from "@aspnet/signalr";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 export default {
   install(Vue) {
@@ -105,8 +105,12 @@ export default {
         });
         return startedPromise;
       }
-      dashboardHub.$emit("connected");
-      connection.onclose(() => {
+      connection.onclose((err) => {
+        if (err) {
+          console.log("Disconnected from hub on error ", err);
+        } else {
+          console.log("Disconnected from hub.", err);
+        }
         dashboardHub.$emit("disconnected");
         if (!manuallyClosed) start();
       });

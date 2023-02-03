@@ -6,31 +6,35 @@
     />
     <ul class="vwi__incidents_list">
       <li
-        class="vwi__incident"
+        class="vwi__incident container"
         v-for="incident in incidents"
         :key="incident.id"
         @click="alertIncident(incident)"
       >
-        <div class="vwi__units">
-          <span
-            :class="[`vwi__unit ${colorUnit(unit.statusId)}`]"
-            v-for="unit in incident.unitsAssigned"
-            :key="unit.radioName"
-          >
-            {{ unit.radioName }}
-          </span>
+        <div class="vwi__units row">
+          <div class="col">
+            <span
+              :class="[`vwi__unit ${colorUnit(unit.statusId)}`]"
+              v-for="unit in incident.unitsAssigned"
+              :key="unit.radioName"
+            >
+              {{ unit.radioName }}
+            </span>
+          </div>
         </div>
-        <div class="vwi__title">
+        <div class="vwi__title row">
           <span class="vwi__call_type"> {{ incident.problem }} </span>
+        </div>
+        <div class="vwi__address row">
+          {{ incident.address }}
+          <span class="vwi__apt"> {{ incident.apartment }} </span>
+          <span class="vwi__city"> {{ incident.county }} </span>
+        </div>
+        <div class="row">
           <span class="vwi__radio_channel float-right">
             <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
             {{ incident.primaryTacChannel }}
           </span>
-        </div>
-        <div class="vwi__address">
-          {{ incident.address }}
-          <span class="vwi__apt"> {{ incident.apartment }} </span>
-          <span class="vwi__city"> {{ incident.county }} </span>
           <span class="vwi__call_time float-right">
             {{ formatTime(incident.incidentStartDateTime) }}
           </span>

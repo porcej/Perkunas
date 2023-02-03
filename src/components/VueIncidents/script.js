@@ -58,11 +58,11 @@ export default {
   },
 
   methods: {
-    alertIncident: function (incident) {
+    alertIncident(incident) {
       this.alertedIncidents.push(incident);
       this.showAlert = true;
     },
-    unalertIncident (incident) {
+    unalertIncident(incident) {
       const idx = this.alertedIncidents.indexOf(incident);
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
@@ -91,11 +91,17 @@ export default {
     },
     // Handle incoming messages
     onIncidentAdded(incident) {
-      let thisIncident = this.incidents.filter((inc) => incident.id === inc.id);
-      if (thisIncident > 0) {
-        thisIncident = incident;
-      } else {
+      let thisIncidentIndex = this.incidents.findIndex(
+        (inc) => incident.id === inc.id
+      );
+      if (thisIncidentIndex === -1) {
+        // We don't have a record of this incidnet, lets add it new
         this.incidents.unshift(incident);
+        console.log(`Incident ${incident.id} opened:`, incident);
+      } else {
+        // We have a record of this incident, lets update it
+        console.log(`Incident ${incident.id} reopened:`, incident);
+        this.incidents[thisIncidentIndex] = incident;
       }
     },
     onIncidentRemoved(incidentId) {

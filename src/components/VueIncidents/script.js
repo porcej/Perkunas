@@ -143,16 +143,17 @@ export default {
     },
     // Handle incoming messages
     onIncidentAdded(incident) {
-      console.log(
-        `============== Incident Added ============== \n=\t`,
-        incident,
-        "\n============================================"
+      const thisIncidentIndex = this.incidents.findIndex(
+        (inc) => incident.id === inc.id
       );
-      let idx = this.incidents.findIndex((inc) => incident.id === inc.id);
-      if (idx >= 0) {
-        this.incidents[idx] = incident;
+      if (thisIncidentIndex === -1) {
+        // We don't have a record of this incidnet, lets add it new
+        this.incidents.unshift(incident);
+        console.log(`Incident ${incident.id} opened:`, incident);
       } else {
-        idx = this.incidents.unshift(incident);
+        // We have a record of this incident, lets update it
+        console.log(`Incident ${incident.id} reopened:`, incident);
+        this.incidents[thisIncidentIndex] = incident;
       }
       if (this.alertForAllIncidents) {
         this.dispatchUnit(this.incidents[idx]);

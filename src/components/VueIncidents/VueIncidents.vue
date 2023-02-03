@@ -22,15 +22,17 @@
         </div>
         <div class="vwi__title">
           <span class="vwi__call_type"> {{ incident.problem }} </span>
-          <span class="vwi__radio_channel float-right">
-            <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
-            {{ incident.primaryTacChannel }}
-          </span>
         </div>
         <div class="vwi__address">
           {{ incident.address }}
           <span class="vwi__apt"> {{ incident.apartment }} </span>
           <span class="vwi__city"> {{ incident.county }} </span>
+        </div>
+        <div class="vwi__call_info">
+          <span class="vwi__radio_channel">
+            <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
+            {{ incident.primaryTacChannel }}
+          </span>
           <span class="vwi__call_time float-right">
             {{ formatTime(incident.incidentStartDateTime) }}
           </span>

@@ -18,8 +18,8 @@ export default {
      *
      * @type {Obect}
      */
-    const dashboardHub = new instance();
-    instance.prototype.$dashboardHub = dashboardHub;
+    const $_dashboardHub = new instance();
+    instance.prototype.$dashboardHub = $_dashboardHub;
 
     /**
      * Object representing the SignalR connection
@@ -27,20 +27,20 @@ export default {
      * @type {(Object|null)}
      */
 
-    let connection = null;
+    let $_connection = null;
     /**
      * Promise representing an established SignalR connection
      *
      * @type {(Promise|null)}
      */
-    let startedPromise = null;
+    let $_startedPromise = null;
 
     /**
      * Flag indicated intent to close the connection
      *
      * @type {Boolean}
      */
-    let manuallyClosed = false;
+    let $_manuallyClosed = false;
 
     /**
      *  Establishes a connection to the SignalR Hub
@@ -49,7 +49,7 @@ export default {
       /**
        *  Object holding SignalR Connection Parameters
        */
-      connection = new HubConnectionBuilder()
+      $_connection = new HubConnectionBuilder()
         .withUrl(`${hubUrl}`)
         .configureLogging(LogLevel.Information)
         .build();
@@ -61,8 +61,8 @@ export default {
        * @event incident-added
        * @type {object}
        */
-      connection.on("IncidentAdded", (incident) => {
-        dashboardHub.$emit("incident-added", incident);
+      $_connection.on("IncidentAdded", (incident) => {
+        $_dashboardHub.$emit("incident-added", incident);
         console.log(`+++Incident #${incident.id} added`, incident);
       });
 
@@ -76,7 +76,7 @@ export default {
        * @event incident-updated
        * @type {object}
        */
-      connection.on("IncidentFieldChanged", (incidentId, field, value) => {
+      $_connection.on("IncidentFieldChanged", (incidentId, field, value) => {
         field = field.charAt(0).toLowerCase() + field.slice(1);
         console.log(
           `++Incident #${incidentId} field change RXed:\n\tField:`,
@@ -84,7 +84,7 @@ export default {
           "\n\tValue:",
           value
         );
-        dashboardHub.$emit("incident-updated", {
+        $_dashboardHub.$emit("incident-updated", {
           incidentId: incidentId,
           field: field,
           value: value,
@@ -99,8 +99,8 @@ export default {
        * @event incident-removed
        * @type {object}
        */
-      connection.on("IncidentRemoved", (incidentId) => {
-        dashboardHub.$emit("incident-removed", {
+      $_connection.on("IncidentRemoved", (incidentId) => {
+        $_dashboardHub.$emit("incident-removed", {
           incidentId: incidentId,
         });
       });
@@ -113,8 +113,8 @@ export default {
        * @event incidents-removed
        * @type {object}
        */
-      connection.on("IncidentsRemoved", (incidentIds) => {
-        dashboardHub.$emit("incidents-removed", {
+      $_connection.on("IncidentsRemoved", (incidentIds) => {
+        $_dashboardHub.$emit("incidents-removed", {
           incidentIds: incidentIds,
         });
       });
@@ -128,12 +128,12 @@ export default {
        * @event incident-comment-added
        * @type {object}
        */
-      connection.on("IncidentCommentAdded", (incidentId, comment) => {
+      $_connection.on("IncidentCommentAdded", (incidentId, comment) => {
         console.log(
           `++Comment added to incident ID ${incidentId} RXed`,
           comment
         );
-        dashboardHub.$emit("incident-comment-added", {
+        $_dashboardHub.$emit("incident-comment-added", {
           incidentId: incidentId,
           comment: comment,
         });
@@ -147,16 +147,16 @@ export default {
        * @event incident-unit-updated, unit-updated
        * @type {object}
        */
-      connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
+      $_connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
         console.log(`++Incident Unit Change RXed: ${incidentId}`, unit);
-        dashboardHub.$emit("incident-unit-updated", {
+        $_dashboardHub.$emit("incident-unit-updated", {
           incidentId: incidentId,
           unit: unit,
         });
         const radioName = unit.radioName;
         for (const [key, value] of Object.entries(unit)) {
           if (key !== "radioName") {
-            dashboardHub.$emit("unit-updated", {
+            $_dashboardHub.$emit("unit-updated", {
               radioName: radioName,
               field: key,
               value: value,
@@ -173,9 +173,9 @@ export default {
        * @event unit-updated
        * @type {object}
        */
-      connection.on("UnitStatusChanged", (radioName, statusId) => {
+      $_connection.on("UnitStatusChanged", (radioName, statusId) => {
         console.log(`++Unit Change RXed: ${radioName}`, statusId);
-        dashboardHub.$emit("unit-updated", {
+        $_dashboardHub.$emit("unit-updated", {
           radioName: radioName,
           field: "statusId",
           value: statusId,
@@ -191,12 +191,12 @@ export default {
        * @event unit-updated
        * @type {object}
        */
-      connection.on("UnitFieldChanged", (radioName, field, value) => {
+      $_connection.on("UnitFieldChanged", (radioName, field, value) => {
         field = field.charAt(0).toLowerCase() + field.slice(1);
         console.log(
           `++Unit Field Change Rxed: ${radioName}: ${field} => ${value}`
         );
-        dashboardHub.$emit("unit-updated", {
+        $_dashboardHub.$emit("unit-updated", {
           radioName: radioName,
           field: field,
           value: value,
@@ -211,13 +211,13 @@ export default {
        *                    SignalR Hub
        */
       function $_start() {
-        startedPromise = connection.start().catch((err) => {
+        $_startedPromise = $_connection.start().catch((err) => {
           console.error("Failed to connect with hub", err);
           return new Promise((resolve, reject) =>
             setTimeout(() => $_start().then(resolve).catch(reject), 5000)
           );
         });
-        return startedPromise;
+        return $_startedPromise;
       }
 
       /**
@@ -229,20 +229,20 @@ export default {
        * @event disconnected
        * @type {boolean}
        */
-      connection.onclose((err) => {
+      $_connection.onclose((err) => {
         if (err) {
           console.log("Disconnected from hub on error ", err);
         } else {
           console.log("Disconnected from hub.", err);
         }
-        dashboardHub.$emit("disconnected");
-        if (!manuallyClosed) $_start();
+        $_dashboardHub.$emit("disconnected");
+        if (!$_manuallyClosed) $_start();
       });
 
       /**
        * Gets things going by starting the starting the connection
        */
-      manuallyClosed = false;
+      $_manuallyClosed = false;
       $_start();
     };
 
@@ -258,14 +258,14 @@ export default {
      *                           representing a stopped connection
      * @public
      */
-    dashboardHub.stopSignalR = () => {
-      if (!startedPromise) return;
+    $_dashboardHub.stopSignalR = () => {
+      if (!$_startedPromise) return;
 
-      manuallyClosed = true;
-      return startedPromise
-        .then(() => connection.stop())
+      $_manuallyClosed = true;
+      return $_startedPromise
+        .then(() => $_connection.stop())
         .then(() => {
-          startedPromise = null;
+          $_startedPromise = null;
         });
     };
 
@@ -276,8 +276,8 @@ export default {
      * @returns {Object} SignalR connection state object
      * @public
      */
-    dashboardHub.state = () => {
-      return connection.state;
+    $_dashboardHub.state = () => {
+      return $_connection.state;
     };
 
     /**
@@ -289,11 +289,11 @@ export default {
      *                           representing a joining the dashboard group
      * @public
      */
-    dashboardHub.JoinDashboard = () => {
-      if (!startedPromise) return;
+    $_dashboardHub.JoinDashboard = () => {
+      if (!$_startedPromise) return;
 
-      return startedPromise
-        .then(() => connection.invoke("JoinDashboard"))
+      return $_startedPromise
+        .then(() => $_connection.invoke("JoinDashboard"))
         .catch(console.error);
     };
 
@@ -307,11 +307,11 @@ export default {
      *                           representing a joining group
      * @public
      */
-    dashboardHub.subscribe = (group) => {
-      if (!startedPromise) return;
+    $_dashboardHub.subscribe = (group) => {
+      if (!$_startedPromise) return;
 
-      return startedPromise
-        .then(() => connection.invoke("Subscribe", group))
+      return $_startedPromise
+        .then(() => $_connection.invoke("Subscribe", group))
         .catch(console.error);
     };
   },

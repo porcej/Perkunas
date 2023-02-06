@@ -264,6 +264,7 @@ export default {
      * @returns {(null|Promise)} Null if SignalR connection is closed
      *                           Otherwise returns a Promise object
      *                           representing a joining the dashboard group
+     * @public
      */
     dashboardHub.JoinDashboard = () => {
       if (!startedPromise) return;
@@ -281,6 +282,7 @@ export default {
      * @returns {(null|Promise)} Null if SignalR connection is closed
      *                           Otherwise returns a Promise object
      *                           representing a joining group
+     * @public
      */
     dashboardHub.subscribe = (group) => {
       if (!startedPromise) return;

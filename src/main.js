@@ -42,7 +42,7 @@ axios.defaults.baseURL = config.cad_url_base;
 Vue.prototype.$http = axios;
 
 // Vue.use(IncidentHub);
-Vue.use(DashboardHub);
+Vue.use(DashboardHub, Vue.prototype.$appConfig.dashboard_hub_url);
 Vue.prototype.startSignalR();
 // Vue.prototype.$dashboardHub.JoinDashboard();
 // Vue.prototype.$incidentHub.subscribe("Incidents");

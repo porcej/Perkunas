@@ -257,24 +257,6 @@ export default {
       return connection.state;
     };
 
-    // Provide methods for components to send messages back to server
-    // Make sure no invocation happens until the connection is established
-    dashboardHub.incidentOpened = (incidentId) => {
-      if (!startedPromise) return;
-
-      return startedPromise
-        .then(() => connection.invoke("JoinIncidentGroup", incidentId))
-        .catch(console.error);
-    };
-
-    dashboardHub.incidentClosed = (incidentId) => {
-      if (!startedPromise) return;
-
-      return startedPromise
-        .then(() => connection.invoke("LeaveIncidentGroup", incidentId))
-        .catch(console.error);
-    };
-
     /**
      * Gets called to join the Dashboard group by invoking the JoinDashboard
      * method on the Dievas server

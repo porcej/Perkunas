@@ -3,7 +3,7 @@ import axios from "axios";
 import App from "./App.vue";
 import router from "./router";
 // import IncidentHub from './incident-hub';
-import DashboardHub from "./dashboard-hub";
+import DashboardHub from "./plugins/DashboardHub.js";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
@@ -42,7 +42,7 @@ axios.defaults.baseURL = config.cad_url_base;
 Vue.prototype.$http = axios;
 
 // Vue.use(IncidentHub);
-Vue.use(DashboardHub);
+Vue.use(DashboardHub, Vue.prototype.$appConfig.dashboard_hub_url);
 Vue.prototype.startSignalR();
 // Vue.prototype.$dashboardHub.JoinDashboard();
 // Vue.prototype.$incidentHub.subscribe("Incidents");

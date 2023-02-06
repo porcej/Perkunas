@@ -31,16 +31,6 @@ export default {
         .configureLogging(LogLevel.Information)
         .build();
 
-      // Forward hub events through the event, so we can listen for them in the Vue components
-      connection.on("ReceiveGroupMessage", (groupName, user, message) => {
-        dashboardHub.$emit("group-message-received", {
-          groupName,
-          user,
-          message,
-        });
-        console.log(`RGM: ${groupName} - ${message}`);
-      });
-
       /**
        * Gets called when a IncidentFieldChanged messages are received
        *

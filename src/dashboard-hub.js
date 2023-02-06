@@ -11,12 +11,35 @@ import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 
 export default {
   install(instance, hubUrl) {
+    /**
+     * Build the SignalR connection on a new Vue Instance, we will then add
+     * that instance to the prototype to make its methods and parameters
+     * available to all of the Vue App
+     *
+     * @type {Obect}
+     */
     const dashboardHub = new instance();
     instance.prototype.$dashboardHub = dashboardHub;
 
-    // Provide methods to connect/disconnect from the SignalR hub
+    /**
+     * Object representing the SignalR connection
+     *
+     * @type {(Object|null)}
+     */
+
     let connection = null;
+    /**
+     * Promise representing an established SignalR connection
+     *
+     * @type {(Promise|null)}
+     */
     let startedPromise = null;
+
+    /**
+     * Flag indicated intent to close the connection
+     *
+     * @type {Boolean}
+     */
     let manuallyClosed = false;
 
     /**
@@ -30,6 +53,18 @@ export default {
         .withUrl(`${hubUrl}`)
         .configureLogging(LogLevel.Information)
         .build();
+
+      /**
+       * Gets called when a IncidentAdded messages are received
+       *
+       * @param {Object} incident new incident information
+       * @event incident-added
+       * @type {object}
+       */
+      connection.on("IncidentAdded", (incident) => {
+        dashboardHub.$emit("incident-added", incident);
+        console.log(`+++Incident #${incident.id} added`, incident);
+      });
 
       /**
        * Gets called when a IncidentFieldChanged messages are received
@@ -54,44 +89,6 @@ export default {
           field: field,
           value: value,
         });
-      });
-
-      /**
-       * Gets called when a IncidentUnitStatusChanged messages are received
-       *
-       * @param {Number} incidentId unique identifier for the incident
-       * @param {Object} unit object populated with any changed values
-       * @event incident-unit-updated, unit-updated
-       * @type {object}
-       */
-      connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
-        console.log(`++Incident Unit Change RXed: ${incidentId}`, unit);
-        dashboardHub.$emit("incident-unit-updated", {
-          incidentId: incidentId,
-          unit: unit,
-        });
-        const radioName = unit.radioName;
-        for (const [key, value] of Object.entries(unit)) {
-          if (key !== "radioName") {
-            dashboardHub.$emit("unit-updated", {
-              radioName: radioName,
-              field: key,
-              value: value,
-            });
-          }
-        }
-      });
-
-      /**
-       * Gets called when a IncidentAdded messages are received
-       *
-       * @param {Object} incident new incident information
-       * @event incident-added
-       * @type {object}
-       */
-      connection.on("IncidentAdded", (incident) => {
-        dashboardHub.$emit("incident-added", incident);
-        console.log(`+++Incident #${incident.id} added`, incident);
       });
 
       /**
@@ -120,6 +117,52 @@ export default {
         dashboardHub.$emit("incidents-removed", {
           incidentIds: incidentIds,
         });
+      });
+
+      /**
+       * Gets called when a IncidentCommentAdded messages are received
+       *
+       * @param {Number} incidentId unique identifier for the associated
+       *                 incident
+       * @param {Object} comment comment to be added
+       * @event incident-comment-added
+       * @type {object}
+       */
+      connection.on("IncidentCommentAdded", (incidentId, comment) => {
+        console.log(
+          `++Comment added to incident ID ${incidentId} RXed`,
+          comment
+        );
+        dashboardHub.$emit("incident-comment-added", {
+          incidentId: incidentId,
+          comment: comment,
+        });
+      });
+
+      /**
+       * Gets called when a IncidentUnitStatusChanged messages are received
+       *
+       * @param {Number} incidentId unique identifier for the incident
+       * @param {Object} unit object populated with any changed values
+       * @event incident-unit-updated, unit-updated
+       * @type {object}
+       */
+      connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
+        console.log(`++Incident Unit Change RXed: ${incidentId}`, unit);
+        dashboardHub.$emit("incident-unit-updated", {
+          incidentId: incidentId,
+          unit: unit,
+        });
+        const radioName = unit.radioName;
+        for (const [key, value] of Object.entries(unit)) {
+          if (key !== "radioName") {
+            dashboardHub.$emit("unit-updated", {
+              radioName: radioName,
+              field: key,
+              value: value,
+            });
+          }
+        }
       });
 
       /**
@@ -157,26 +200,6 @@ export default {
           radioName: radioName,
           field: field,
           value: value,
-        });
-      });
-
-      /**
-       * Gets called when a IncidentCommentAdded messages are received
-       *
-       * @param {Number} incidentId unique identifier for the associated
-       *                 incident
-       * @param {Object} comment comment to be added
-       * @event incident-comment-added
-       * @type {object}
-       */
-      connection.on("IncidentCommentAdded", (incidentId, comment) => {
-        console.log(
-          `++Comment added to incident ID ${incidentId} RXed`,
-          comment
-        );
-        dashboardHub.$emit("incident-comment-added", {
-          incidentId: incidentId,
-          comment: comment,
         });
       });
 

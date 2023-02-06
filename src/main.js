@@ -3,7 +3,7 @@ import axios from "axios";
 import App from "./App.vue";
 import router from "./router";
 // import IncidentHub from './incident-hub';
-import DashboardHub from "./dashboard-hub";
+import DashboardHub from "./plugins/DashboardHub.js";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)

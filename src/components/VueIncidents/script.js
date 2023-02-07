@@ -136,6 +136,8 @@ export default {
       if (!alertedAlready) {
         this.alertedIncidents.push(incident);
         this.showAlert = true;
+      } else {
+        console.info(`\t${incident.masterIncidentNumber} already alerts`);
       }
     },
 
@@ -158,8 +160,24 @@ export default {
       const idx = this.alertedIncidents.indexOf(incident);
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
+      } else {
+        console.warn(
+          `Unable to unalert incident ${incident.id}, no such incident found.`,
+          incident
+        );
       }
       delete this.alertCounters[incident.id];
+    },
+
+    /**
+     * Gets incident index from incident id
+     *
+     * @params {Number} incidentId unique id for an incident
+     * @returns {Number} index for the incident with with ID incident in
+     *                   this.incidents or -1 if not found
+     */
+    getIncidentIndex(incidentId) {
+      return this.incidents.findIndex((inc) => incidentId === inc.id);
     },
 
     /**
@@ -220,20 +238,21 @@ export default {
      */
     onIncidentAdded(incident) {
       console.info("\tIncidented Added: ", incident);
-      const thisIncidentIndex = this.incidents.findIndex(
-        (inc) => incident.id === inc.id
-      );
-      if (thisIncidentIndex === -1) {
+      const idx = this.getIncidentIndex(incident.id);
+      if (idx === -1) {
         // We don't have a record of this incidnet, lets create it
         this.incidents.unshift(incident);
         console.info(`\tIncident ${incident.id} opened:`, incident);
       } else {
         // We have a record of this incident, lets update it
-        console.info(`\t*** Incident ${incident.id} reopened:`, incident);
-        this.incidents[thisIncidentIndex] = incident;
+        console.warn(
+          `New incident request received for ${incident.id} but we already have it.`,
+          incident
+        );
+        this.incidents[idx] = incident;
       }
       if (this.alertOnUnits(incident.unitsAssigned)) {
-        this.dispatchUnit(this.incident[thisIncidentIndex]);
+        this.dispatchUnit(this.incident[idx]);
       }
     },
 
@@ -246,10 +265,14 @@ export default {
      */
     onIncidentRemoved(incidentId) {
       console.info(`\tRemove incident requested for ${incidentId}`);
-      const idx = this.incidents.findIndex((inc) => incidentId === inc.id);
+      const idx = this.getIncidentIndex(incidentId);
       if (idx !== -1) {
         this.incidents.splice(idx, 1);
         console.info(`\tIncident ${incidentId} removed`);
+      } else {
+        console.warn(
+          `Unable to remove incident ${incidentId}, no such incident found.`
+        );
       }
     },
 
@@ -268,7 +291,6 @@ export default {
         this.onIncidentRemoved(incidentId);
       });
       console.info("\t**********************");
-
     },
 
     /**
@@ -283,6 +305,15 @@ export default {
         `\tIncident field change for ${update.indentId} received: `,
         update
       );
+      const idx = this.getIncidentIndex(update.indentId);
+      if (idx !== -1) {
+        this.incidents[idx][update.field] = update.value;
+      } else {
+        console.error(
+          `Unable to find incident ${update.incidentId} during incident update.`,
+          update
+        );
+      }
     },
 
     /**
@@ -296,6 +327,24 @@ export default {
         `\tIncident unit update for incident id# ${update.indentId} received: `,
         update
       );
+      const idx = this.getIncidentIndex(update.incidentId);
+
+      if (idx !== -1) {
+        // We have a valid index so we must have the incident
+        // Get the assigned unit's index
+        const udx = this.incidents[idx].unitsAssigned.findIndex(
+          (unit) => unit.radioName === update.unit.radioName
+        );
+        if (udx === -1) {
+          this.incidents[idx].unitsAssigned.push(update.unit);
+          console.info(
+            `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
+          );
+          if (this.alertOnUnits(update.unit)) {
+            this.dispatchUnit(this.incidents[idx]);
+          }
+        }
+      }
     },
 
     /**
@@ -310,6 +359,27 @@ export default {
         `\tIncident comment added to incident ${comment.incidentId}: `,
         comment
       );
+      const idx = this.getIncidentIndex(comment.incidentId);
+      if (idx !== -1) {
+        // We have a valid index so we must have the incident
+        if (this.incidents[idx].comments === null) {
+          this.incidents[idx].comments = [];
+        }
+
+        // Check for dupliace comments
+        const cdx = this.incidents[idx].comments.findIndex(
+          (cmnt) => comment.comment.id === cmnt.id
+        );
+        if (cdx === -1) {
+          this.incidents[idx].comments.push(comment.comment);
+        } else {
+          this.incidents[idx].comments[cdx] = comment.comment;
+          console.warn(
+            `Duplicate comments found on incident ${comment.incidentId}`,
+            comment.comment
+          );
+        }
+      }
     },
 
     /**

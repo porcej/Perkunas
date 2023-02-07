@@ -153,16 +153,16 @@ export default {
           incidentId: incidentId,
           unit: unit,
         });
-        const radioName = unit.radioName;
-        for (const [key, value] of Object.entries(unit)) {
-          if (key !== "radioName") {
-            $_dashboardHub.$emit("unit-updated", {
-              radioName: radioName,
-              field: key,
-              value: value,
-            });
-          }
-        }
+
+        // Send out a generic unit update as well
+        const fieldsToUpdate = ["statusId", "statusCode"];
+        fieldsToUpdate.forEach((fdx) => {
+          $_dashboardHub.$emit("unit-updated", {
+            radioName: unit.radioName,
+            field: fdx,
+            value: unit[fdx],
+          });
+        });
       });
 
       /**

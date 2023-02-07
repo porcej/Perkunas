@@ -261,7 +261,14 @@ export default {
      *                to beremoved
      */
     onIncidentsRemoved(incidentIds) {
-      console.info("\tIncidents removed: ", incidentIds);
+      console.info(
+        `\tRemoval of incidents ${incidentIds.join(", ")} has been requested`
+      );
+      incidentIds.forEach((incidentId) => {
+        this.onIncidentRemoved(incidentId);
+      });
+      console.info("\t**********************");
+
     },
 
     /**

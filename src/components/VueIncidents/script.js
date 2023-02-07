@@ -181,6 +181,31 @@ export default {
     },
 
     /**
+     * Filters the unit list to create a list of radio names for this to
+     * alert on
+     *
+     * @params {Number} incidentId unique id for an incident
+     * @returns {Number} index for the incident with with ID incident in
+     *                   this.incidents or -1 if not found
+     */
+    generateUnitsToAlert() {
+      this.unitsToAlert = this.units.reduce((udx, unit) => {
+        if (unit.currentStation === this.station) {
+          udx.push(unit.radioName);
+        }
+        return udx;
+      }, []);
+      console.info(
+        `${"*".padStart(
+          79,
+          "*"
+        )}\nThis station alert on\n\t${this.unitsToAlert.join(
+          "\n\t"
+        )}\n${"*".padStart(79, "*")}`
+      );
+    },
+
+    /**
      * Fetches incidents from API
      *
      */
@@ -207,9 +232,7 @@ export default {
         url: this.unitsUrl,
       }).then((data) => {
         this.$set(this, "units", data);
-        this.unitsToAlert = this.units
-          .filter((udx) => udx.currentStation === this.station)
-          .map((udx) => udx.radioName);
+        this.generateUnitsToAlert();
       });
     },
 
@@ -392,6 +415,25 @@ export default {
       console.info(
         `\tUnit: ${update.radioName} updated ${update.field}: ${update.value} `
       );
+      const udx = this.units.findIndex(
+        (udx) => udx.radioName == update.radioName
+      );
+      if (udx !== -1) {
+        // Update unit if we found it
+        this.units[udx][update.field] = update.value;
+      } else {
+        // Add data to new unit if we could not find it
+        console.info(`${update.radioName} not found, adding it.`);
+        this.units.push({
+          radioName: update.radioName,
+          [update.field]: update.values,
+        });
+      }
+
+      // Handle updates to alerting
+      if (update.field === "currentStation") {
+        this.generateUnitsToAlert();
+      }
     },
 
     /**

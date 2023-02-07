@@ -163,7 +163,13 @@ export default {
     colorUnit(id) {
       return `vwi__unit_status_${Utils.getUnitIncidentStatus(id)}`;
     },
-    // Handle incoming messages
+
+    /**
+     * Gets called by the incident-added event, adds or updates an incident in
+     * the incidents list, then generats an alert if needed
+     *
+     * @param {Object} incident new incident information
+     */
     onIncidentAdded(incident) {
       const thisIncidentIndex = this.incidents.findIndex(
         (inc) => incident.id === inc.id
@@ -183,7 +189,7 @@ export default {
         const alertedUnits = incident.unitsAssigned.filter((udx) =>
           this.unitsToAlert.includes(udx.radioName)
         );
-        if (alertedUnits.length !== -1) {
+        if (alertedUnits.length > 0) {
           this.dispatchUnit(this.incidents[thisIncidentIndex]);
           alertedUnits.forEach((udx) =>
             console.log(`**** Alerted on ${udx} ****`)

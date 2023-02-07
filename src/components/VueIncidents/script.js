@@ -196,6 +196,23 @@ export default {
     },
 
     /**
+     * Checks to see if we should alert for any of the units units can be
+     * strings of objects so long as any objects have a radioName field
+     * that is a string
+     *
+     * @param {Array} units array representing units
+     * @returns {Boolean} true if and only if we should alert
+     */
+    alertOnUnits(units) {
+      const alertedUnits =
+        typeof units !== "string"
+          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
+          : units.filter((udx) => this.unitsToAlert.includes(udx));
+
+      return this.alertForAllIncidents || alertedUnits.length > 0;
+    },
+
+    /**
      * Gets called by the incident-added event, adds or updates an incident in
      * the incidents list, then generats an alert if needed
      *
@@ -203,6 +220,21 @@ export default {
      */
     onIncidentAdded(incident) {
       console.info("\tIncidented Added: ", incident);
+      const thisIncidentIndex = this.incidents.findIndex(
+        (inc) => incident.id === inc.id
+      );
+      if (thisIncidentIndex === -1) {
+        // We don't have a record of this incidnet, lets create it
+        this.incidents.unshift(incident);
+        console.info(`\tIncident ${incident.id} opened:`, incident);
+      } else {
+        // We have a record of this incident, lets update it
+        console.info(`\t*** Incident ${incident.id} reopened:`, incident);
+        this.incidents[thisIncidentIndex] = incident;
+      }
+      if (this.alertOnUnits(incident.unitsAssigned)) {
+        this.dispatchUnit(this.incident[thisIncidentIndex]);
+      }
     },
 
     /**

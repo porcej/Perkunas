@@ -245,7 +245,12 @@ export default {
      *                 removed
      */
     onIncidentRemoved(incidentId) {
-      console.info("\tIncident Removed: ", incidentId);
+      console.info(`\tRemove incident requested for ${incidentId}`);
+      const idx = this.incidents.findIndex((inc) => incidentId === inc.id);
+      if (idx !== -1) {
+        this.incidents.splice(idx, 1);
+        console.info(`\tIncident ${incidentId} removed`);
+      }
     },
 
     /**

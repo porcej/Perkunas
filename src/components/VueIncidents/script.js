@@ -72,6 +72,20 @@ export default {
     // clearTimeout(this.timeout);
   },
 
+  computed: {
+    /**
+     * filters the incident
+     *
+     * @returns {Array} Array of incidents filtered for display on dashboards
+     *
+     */
+    displayIncidents() {
+      return this.incidents.filter((inc) => {
+        inc.masterIncidentNumber !== null && inc.unitsAssigned.length !== -1;
+      });
+    },
+  },
+
   methods: {
     /**
      * Checks if we are connected to a SignalR hub and if we are joins calls
@@ -261,7 +275,7 @@ export default {
      */
     onIncidentAdded(incident) {
       console.info("\tIncidented Added: ", incident);
-      const idx = this.getIncidentIndex(incident.id);
+      let idx = this.getIncidentIndex(incident.id);
       if (idx === -1) {
         // We don't have a record of this incidnet, lets create it
         this.incidents.unshift(incident);
@@ -272,7 +286,7 @@ export default {
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
-        this.incidents[idx] = incident;
+        idx = this.incidents.push(incident);
       }
       if (this.alertOnUnits(incident.unitsAssigned)) {
         this.dispatchUnit(this.incident[idx]);
@@ -325,10 +339,10 @@ export default {
      */
     onIncidentUpdated(update) {
       console.info(
-        `\tIncident field change for ${update.indentId} received: `,
+        `\tIncident field change for ${update.incidentId} received: `,
         update
       );
-      const idx = this.getIncidentIndex(update.indentId);
+      const idx = this.getIncidentIndex(update.incidentId);
       if (idx !== -1) {
         this.incidents[idx][update.field] = update.value;
       } else {
@@ -347,7 +361,7 @@ export default {
      */
     onIncidentUnitUpdated(update) {
       console.info(
-        `\tIncident unit update for incident id# ${update.indentId} received: `,
+        `\tIncident unit update for incident id# ${update.incidentId} received: `,
         update
       );
       const idx = this.getIncidentIndex(update.incidentId);

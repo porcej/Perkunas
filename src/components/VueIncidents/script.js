@@ -222,7 +222,7 @@ export default {
         `${"*".padStart(
           79,
           "*"
-        )}\nThis station alert on\n\t${this.unitsToAlert.join(
+        )}\nThis station alerts on\n\t${this.unitsToAlert.join(
           "\n\t"
         )}\n${"*".padStart(79, "*")}`
       );

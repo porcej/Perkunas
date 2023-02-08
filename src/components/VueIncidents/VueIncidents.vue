@@ -9,7 +9,7 @@
         class="vwi__incident"
         v-for="incident in incidents"
         :key="incident.id"
-        @click="alertIncident(incident)"
+        @click="alertIncident(incident.id)"
       >
         <div class="vwi__units">
           <span

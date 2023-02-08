@@ -37,9 +37,9 @@ export default {
   data() {
     return {
       loading: true,
-      incidents: null,
-      units: null,
-      unitsToAlert: null,
+      incidents: [],
+      units: [],
+      unitsToAlert: [],
       error: null,
       showAlert: false,
       alertedIncidents: [],

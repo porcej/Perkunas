@@ -30,7 +30,7 @@ export default {
     },
     alertTimeOut: {
       type: Number,
-      default: 120,
+      default: 25,
     },
   },
 
@@ -41,7 +41,6 @@ export default {
       units: [],
       unitsToAlert: [],
       error: null,
-      showAlert: false,
       alertedIncidents: [],
       alertCounters: {},
       reconnectTimout: null,
@@ -145,21 +144,30 @@ export default {
     /**
      * Adds an incident to the alerts modal window
      *
-     * @params {Object} incident Object representing incident to be alerted
+     * @params {Number} incidentId number representing an incident
      */
-    alertIncident(incident) {
-      console.info(
-        "***************************************\n",
-        `**** Alert Requested for Incident ${incident.masterIncidentNumber} `,
-        incident,
-        "\n***************************************\n"
-      );
-      const alertedAlready = this.alertedIncidents.includes(incident);
-      if (!alertedAlready) {
-        this.alertedIncidents.push(incident);
-        this.showAlert = true;
+    alertIncident(incidentId) {
+      const idx = this.getIndexOfIncident(incidentId);
+      if (idx === -1) {
+        console.error(`Alert requested for unknown incident #${incidentId}.`);
       } else {
-        console.info(`\t${incident.masterIncidentNumber} already alerts`);
+        console.info(
+          "***************************************\n",
+          `**** Alert Requested for Incident `,
+          `${this.incidents[idx].masterIncidentNumber} `,
+          this.incidents[idx],
+          "\n***************************************\n"
+        );
+        const alertedAlready = this.alertedIncidents.includes(
+          this.incidents[idx]
+        );
+        if (!alertedAlready) {
+          this.alertedIncidents.push(this.incidents[idx]);
+        } else {
+          console.info(
+            `\t${this.incidents[idx].masterIncidentNumber} already alerts`
+          );
+        }
       }
     },
 
@@ -169,27 +177,29 @@ export default {
      * @params {Number} incidentId number representing an incident
      */
     dispatchUnit(incidentId) {
-      const idx = this.getIndexOfIncident(incidentId);
-      this.alertIncident(this.incidents[idx]);
+      this.alertIncident(incidentId);
       this.alertCounters[incidentId] = 0;
     },
 
     /**
      * Removed incident from alerts
      *
-     * @params {Object} incident Object representing incident to be alerted
+     * @params {Number} incidentId number representing an incident
      */
-    unalertIncident(incident) {
-      const idx = this.alertedIncidents.indexOf(incident);
+    unalertIncident(incidentId) {
+      incidentId = Number(incidentId);
+      const idx = this.alertedIncidents.findIndex(
+        (inc) => incidentId === inc.id
+      );
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
+        console.info(`\tIncident ${incidentId} unalerted.`);
       } else {
         console.warn(
-          `Unable to unalert incident ${incident.id}, no such incident found.`,
-          incident
+          `Unable to unalert incident ${incidentId}, no such incident found.`
         );
       }
-      delete this.alertCounters[incident.id];
+      delete this.alertCounters[incidentId];
     },
 
     /**

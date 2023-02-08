@@ -57,6 +57,7 @@ export default {
 
   mounted() {
     this.initHubConnection();
+    this.$on("unalertIncident", this.unalertIncident);
     this.$dashboardHub.$on("disconnected", this.onDisconnect);
     this.$dashboardHub.$on("incident-added", this.onIncidentAdded);
     this.$dashboardHub.$on("incident-updated", this.onIncidentUpdated);

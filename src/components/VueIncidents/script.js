@@ -167,9 +167,10 @@ export default {
      *
      * @params {Object} incident Object representing incident to be alerted
      */
-    dispatchUnit(incident) {
-      this.alertIncident(incident);
-      this.alertCounters[incident.id] = 0;
+    dispatchUnit(incidentId) {
+      const idx = this.getIncidentOfIndex(incidentId);
+      this.alertIncident(this.incidents[idx]);
+      this.alertCounters[incidentId] = 0;
     },
 
     /**
@@ -197,7 +198,7 @@ export default {
      * @returns {Number} index for the incident with with ID incident in
      *                   this.incidents or -1 if not found
      */
-    getIncidentIndex(incidentId) {
+    getIncidentOfIndex(incidentId) {
       return this.incidents.findIndex((inc) => incidentId === inc.id);
     },
 
@@ -284,7 +285,7 @@ export default {
      */
     onIncidentAdded(incident) {
       console.info("\tIncidented Added: ", incident);
-      let idx = this.getIncidentIndex(incident.id);
+      let idx = this.getIncidentOfIndex(incident.id);
       if (idx === -1) {
         // We don't have a record of this incidnet, lets create it
         this.incidents.unshift(incident);
@@ -299,7 +300,7 @@ export default {
         this.incidents[idx] = incident;
       }
       if (this.alertOnUnits(incident.unitsAssigned)) {
-        this.dispatchUnit(this.incident[idx]);
+        this.dispatchUnit(incident.id);
       }
     },
 
@@ -312,7 +313,7 @@ export default {
      */
     onIncidentRemoved(incidentId) {
       console.info(`\tRemove incident requested for ${incidentId}`);
-      const idx = this.getIncidentIndex(incidentId);
+      const idx = this.getIncidentOfIndex(incidentId);
       if (idx !== -1) {
         this.incidents.splice(idx, 1);
         console.info(`\tIncident ${incidentId} removed`);
@@ -352,7 +353,7 @@ export default {
         `\tIncident field change for ${update.incidentId} received: `,
         update
       );
-      const idx = this.getIncidentIndex(update.incidentId);
+      const idx = this.getIncidentOfIndex(update.incidentId);
       if (idx !== -1) {
         this.incidents[idx][update.field] = update.value;
       } else {
@@ -374,7 +375,7 @@ export default {
         `\tIncident unit update for incident id# ${update.incidentId} received: `,
         update
       );
-      const idx = this.getIncidentIndex(update.incidentId);
+      const idx = this.getIncidentOfIndex(update.incidentId);
 
       if (idx !== -1) {
         // We have a valid index so we must have the incident
@@ -389,7 +390,7 @@ export default {
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
           if (this.alertOnUnits(update.unit)) {
-            this.dispatchUnit(this.incidents[idx]);
+            this.dispatchUnit(update.incidentId);
           }
         } else {
           // Unit is on call, lets change its status
@@ -413,7 +414,7 @@ export default {
         `\tIncident comment added to incident ${comment.incidentId}: `,
         comment
       );
-      const idx = this.getIncidentIndex(comment.incidentId);
+      const idx = this.getIncidentOfIndex(comment.incidentId);
       if (idx !== -1) {
         // We have a valid index so we must have the incident
         if (this.incidents[idx].comments === null) {

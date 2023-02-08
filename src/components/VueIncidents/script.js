@@ -44,6 +44,8 @@ export default {
       showAlert: false,
       alertedIncidents: [],
       alertCounters: {},
+      reconnectTimout: null,
+      alertingTimeout: null,
     };
   },
 
@@ -69,7 +71,8 @@ export default {
   },
 
   destroyed() {
-    // clearTimeout(this.timeout);
+    clearTimeout(this.alertingTimeout);
+    clearTimeout(this.reconnectTimout);
   },
 
   computed: {
@@ -79,10 +82,14 @@ export default {
      * @returns {Array} Array of incidents filtered for display on dashboards
      *
      */
-    displayIncidents() {
-      return this.incidents.filter((inc) => {
-        inc.masterIncidentNumber !== null && inc.unitsAssigned.length !== -1;
-      });
+    displayIncidentsList() {
+      // return this.incidents;
+      // let incidents = this.incidents.filter((inc) => {
+      //  return inc.id !== null;
+      // });
+      // console.log(incidents);
+      return this.incidents;
+      // return this.incidents.filter((inc) => inc.masterIncidentNumber !== null && inc.assignedUnits.length !== -1);
     },
   },
 
@@ -102,7 +109,7 @@ export default {
         this.alertTimer();
       } else {
         console.info("Connecting...");
-        setTimeout(() => {
+        this.reconnectTimout = setTimeout(() => {
           this.initHubConnection();
         }, this.reconnectTicker);
       }
@@ -122,7 +129,7 @@ export default {
      *
      */
     alertTimer() {
-      setTimeout(() => {
+      this.alertingTimeout = setTimeout(() => {
         Object.keys(this.alertCounters).forEach((cdx) => {
           if (this.alertCounters[cdx] > this.alertTimeOut) {
             this.unalertIncident(cdx);
@@ -261,8 +268,10 @@ export default {
     alertOnUnits(units) {
       const alertedUnits =
         typeof units !== "string"
-          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
-          : units.filter((udx) => this.unitsToAlert.includes(udx));
+          ? this.units.filter((udx) =>
+              this.unitsToAlert.includes(udx.radioName)
+            )
+          : this.units.filter((udx) => this.unitsToAlert.includes(udx));
 
       return this.alertForAllIncidents || alertedUnits.length > 0;
     },
@@ -280,13 +289,14 @@ export default {
         // We don't have a record of this incidnet, lets create it
         this.incidents.unshift(incident);
         console.info(`\tIncident ${incident.id} opened:`, incident);
+        idx = 0;
       } else {
         // We have a record of this incident, lets update it
         console.warn(
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
-        idx = this.incidents.push(incident);
+        this.incidents[idx] = incident;
       }
       if (this.alertOnUnits(incident.unitsAssigned)) {
         this.dispatchUnit(this.incident[idx]);
@@ -373,6 +383,7 @@ export default {
           (unit) => unit.radioName === update.unit.radioName
         );
         if (udx === -1) {
+          // We don't have the unit assigned to this call, let us assign it
           this.incidents[idx].unitsAssigned.push(update.unit);
           console.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
@@ -380,6 +391,12 @@ export default {
           if (this.alertOnUnits(update.unit)) {
             this.dispatchUnit(this.incidents[idx]);
           }
+        } else {
+          // Unit is on call, lets change its status
+          this.incidents[idx].unitsAssigned[udx] = {
+            ...this.incidents[idx].unitsAssigned[udx],
+            ...update.unit,
+          };
         }
       }
     },

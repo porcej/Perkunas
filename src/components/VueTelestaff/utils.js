@@ -73,6 +73,14 @@ const utils = {
       (station) => station.title === utils.station
     )[0];
 
+    if (stationRoster === undefined) {
+      return {
+        day: utils.getTodayOrDayName(shiftDate),
+        date: shiftDate,
+        shift: shift.title.split(" ")[1].toLowerCase(),
+      }
+    }
+
     return {
       day: utils.getTodayOrDayName(shiftDate),
       date: shiftDate,

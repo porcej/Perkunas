@@ -52,7 +52,9 @@
                 {{ comment.text }} <br />
               </span>
             </p>
-            <button class="button_close" @click="unalert(incident)">X</button>
+            <button class="button_close" @click="unalert(incident.id)">
+              X
+            </button>
           </div>
           <div class="col-7 h-100">
             <l-map

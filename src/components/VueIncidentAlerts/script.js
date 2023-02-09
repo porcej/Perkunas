@@ -58,7 +58,7 @@ export default {
     closeAlerts() {
       // In the case where the modal window is forced close we will clear all incidents
       this.incidents.forEach((incident) =>
-        this.$emit("unalertIncident", incident)
+        this.$emit("unalertIncident", incident.id)
       );
     },
     openAlerts() {

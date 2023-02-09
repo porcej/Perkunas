@@ -41,7 +41,6 @@ export default {
       units: [],
       unitsToAlert: [],
       error: null,
-      showAlert: false,
       alertedIncidents: [],
       alertCounters: {},
       reconnectTimout: null,
@@ -78,19 +77,16 @@ export default {
 
   computed: {
     /**
-     * filters the incident
+     * Generates filtered list of incidents. specifically incidents without
+     * units assigned or without a master incident number are reemoved
      *
-     * @returns {Array} Array of incidents filtered for display on dashboards
-     *
+     * @returns {Array} array of filtered incidents
      */
-    displayIncidentsList() {
-      // return this.incidents;
-      // let incidents = this.incidents.filter((inc) => {
-      //  return inc.id !== null;
-      // });
-      // console.log(incidents);
-      return this.incidents;
-      // return this.incidents.filter((inc) => inc.masterIncidentNumber !== null && inc.assignedUnits.length !== -1);
+    cleanIncidents() {
+      return this.incidents.filter(
+        (inc) =>
+          inc.masterIncidentNumber !== null && inc.unitsAssigned.length !== 0
+      );
     },
   },
 
@@ -145,21 +141,30 @@ export default {
     /**
      * Adds an incident to the alerts modal window
      *
-     * @params {Object} incident Object representing incident to be alerted
+     * @params {Number} incidentId number representing an incident
      */
-    alertIncident(incident) {
-      console.info(
-        "***************************************\n",
-        `**** Alert Requested for Incident ${incident.masterIncidentNumber} `,
-        incident,
-        "\n***************************************\n"
-      );
-      const alertedAlready = this.alertedIncidents.includes(incident);
-      if (!alertedAlready) {
-        this.alertedIncidents.push(incident);
-        this.showAlert = true;
+    alertIncident(incidentId) {
+      const idx = this.getIndexOfIncident(incidentId);
+      if (idx === -1) {
+        console.error(`Alert requested for unknown incident #${incidentId}.`);
       } else {
-        console.info(`\t${incident.masterIncidentNumber} already alerts`);
+        console.info(
+          "***************************************\n",
+          `**** Alert Requested for Incident `,
+          `${this.incidents[idx].masterIncidentNumber} `,
+          this.incidents[idx],
+          "\n***************************************\n"
+        );
+        const alertedAlready = this.alertedIncidents.includes(
+          this.incidents[idx]
+        );
+        if (!alertedAlready) {
+          this.alertedIncidents.push(this.incidents[idx]);
+        } else {
+          console.info(
+            `\t${this.incidents[idx].masterIncidentNumber} already alerts`
+          );
+        }
       }
     },
 
@@ -169,27 +174,29 @@ export default {
      * @params {Number} incidentId number representing an incident
      */
     dispatchUnit(incidentId) {
-      const idx = this.getIndexOfIncident(incidentId);
-      this.alertIncident(this.incidents[idx]);
-      this.alertCounters[incidentId] = 0;
+      this.alertIncident(incidentId);
+      this.alertCounters[incidentId.toString()] = 0;
     },
 
     /**
      * Removed incident from alerts
      *
-     * @params {Object} incident Object representing incident to be alerted
+     * @params {Number} incidentId number representing an incident
      */
-    unalertIncident(incident) {
-      const idx = this.alertedIncidents.indexOf(incident);
+    unalertIncident(incidentId) {
+      incidentId = Number(incidentId);
+      const idx = this.alertedIncidents.findIndex(
+        (inc) => incidentId === inc.id
+      );
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
+        console.info(`\tIncident ${incidentId} unalerted.`);
       } else {
         console.warn(
-          `Unable to unalert incident ${incident.id}, no such incident found.`,
-          incident
+          `Unable to unalert incident ${incidentId}, no such incident found.`
         );
       }
-      delete this.alertCounters[incident.id];
+      delete this.alertCounters[incidentId.toString()];
     },
 
     /**
@@ -270,11 +277,8 @@ export default {
     alertOnUnits(units) {
       const alertedUnits =
         typeof units !== "string"
-          ? this.units.filter((udx) =>
-              this.unitsToAlert.includes(udx.radioName)
-            )
-          : this.units.filter((udx) => this.unitsToAlert.includes(udx));
-
+          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
+          : units.filter((udx) => this.unitsToAlert.includes(udx));
       return this.alertForAllIncidents || alertedUnits.length > 0;
     },
 
@@ -298,9 +302,10 @@ export default {
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
-        this.incidents[idx] = incident;
+        // Something must have gone wrong, replace the entire incident
+        this.incidents.splice(idx, 1, incident);
       }
-      if (this.alertOnUnits(incident.unitsAssigned)) {
+      if (this.alertOnUnits(incident.unitsAssigned) && incident.isActive) {
         this.dispatchUnit(incident.id);
       }
     },
@@ -356,7 +361,11 @@ export default {
       );
       const idx = this.getIndexOfIncident(update.incidentId);
       if (idx !== -1) {
-        this.incidents[idx][update.field] = update.value;
+        // const inc = this.incidents[idx][update] = update.value;
+        this.incidents.splice(idx, 1, {
+          ...this.incidents[idx],
+          [update.field]: update.value,
+        });
       } else {
         console.error(
           `Unable to find incident ${update.incidentId} during incident update.`,
@@ -387,19 +396,25 @@ export default {
         if (udx === -1) {
           // We don't have the unit assigned to this call, let us assign it
           this.incidents[idx].unitsAssigned.push(update.unit);
+          // this.incidents.splice(idx, 1, unt);
           console.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
-          if (this.alertOnUnits(update.unit)) {
+          if (this.alertOnUnits([update.unit])) {
             this.dispatchUnit(update.incidentId);
           }
         } else {
           // Unit is on call, lets change its status
-          this.incidents[idx].unitsAssigned[udx] = {
+          this.incidents[idx].unitsAssigned.splice(udx, 1, {
             ...this.incidents[idx].unitsAssigned[udx],
             ...update.unit,
-          };
+          });
         }
+      } else {
+        console.warn(
+          `Unable to find incident ${update.incidentId} during incident unit update.`,
+          update
+        );
       }
     },
 
@@ -429,7 +444,7 @@ export default {
         if (cdx === -1) {
           this.incidents[idx].comments.push(comment.comment);
         } else {
-          this.incidents[idx].comments[cdx] = comment.comment;
+          this.incidents[idx].comments.splice(cdx, 1, comment.comment);
           console.warn(
             `Duplicate comments found on incident ${comment.incidentId}`,
             comment.comment
@@ -453,7 +468,10 @@ export default {
       );
       if (udx !== -1) {
         // Update unit if we found it
-        this.units[udx][update.field] = update.value;
+        this.units.splice(udx, 1, {
+          ...this.units[udx],
+          [update.field]: update.value,
+        });
       } else {
         // Add data to new unit if we could not find it
         console.info(`${update.radioName} not found, adding it.`);

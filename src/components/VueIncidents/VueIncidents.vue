@@ -7,7 +7,7 @@
     <ul class="vwi__incidents_list">
       <li
         class="vwi__incident"
-        v-for="incident in incidents"
+        v-for="incident in cleanIncidents"
         :key="incident.id"
         @click="alertIncident(incident.id)"
       >

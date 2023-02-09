@@ -75,6 +75,15 @@ export default {
     clearTimeout(this.reconnectTimout);
   },
 
+  computed: {
+    cleanIncidents() {
+      return this.incidents.filter(
+        (inc) =>
+          inc.masterIncidentNumber !== null && inc.unitsAssigned.length !== 0
+      );
+    },
+  },
+
   methods: {
     /**
      * Checks if we are connected to a SignalR hub and if we are joins calls
@@ -290,7 +299,7 @@ export default {
         // Something must have gone wrong, replace the entire incident
         this.incidents.splice(idx, 1, incident);
       }
-      if (this.alertOnUnits(incident.unitsAssigned)) {
+      if (this.alertOnUnits(incident.unitsAssigned) && incident.isActive) {
         this.dispatchUnit(incident.id);
       }
     },

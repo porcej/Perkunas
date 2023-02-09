@@ -30,7 +30,7 @@ export default {
     },
     alertTimeOut: {
       type: Number,
-      default: 25,
+      default: 120,
     },
   },
 
@@ -73,24 +73,6 @@ export default {
   destroyed() {
     clearTimeout(this.alertingTimeout);
     clearTimeout(this.reconnectTimout);
-  },
-
-  computed: {
-    /**
-     * filters the incident
-     *
-     * @returns {Array} Array of incidents filtered for display on dashboards
-     *
-     */
-    displayIncidentsList() {
-      // return this.incidents;
-      // let incidents = this.incidents.filter((inc) => {
-      //  return inc.id !== null;
-      // });
-      // console.log(incidents);
-      return this.incidents;
-      // return this.incidents.filter((inc) => inc.masterIncidentNumber !== null && inc.assignedUnits.length !== -1);
-    },
   },
 
   methods: {
@@ -178,7 +160,7 @@ export default {
      */
     dispatchUnit(incidentId) {
       this.alertIncident(incidentId);
-      this.alertCounters[incidentId] = 0;
+      this.alertCounters[incidentId.toString()] = 0;
     },
 
     /**
@@ -199,7 +181,7 @@ export default {
           `Unable to unalert incident ${incidentId}, no such incident found.`
         );
       }
-      delete this.alertCounters[incidentId];
+      delete this.alertCounters[incidentId.toString()];
     },
 
     /**
@@ -280,11 +262,8 @@ export default {
     alertOnUnits(units) {
       const alertedUnits =
         typeof units !== "string"
-          ? this.units.filter((udx) =>
-              this.unitsToAlert.includes(udx.radioName)
-            )
-          : this.units.filter((udx) => this.unitsToAlert.includes(udx));
-
+          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
+          : units.filter((udx) => this.unitsToAlert.includes(udx));
       return this.alertForAllIncidents || alertedUnits.length > 0;
     },
 
@@ -308,7 +287,8 @@ export default {
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
-        this.incidents[idx] = incident;
+        // Something must have gone wrong, replace the entire incident
+        this.incidents.splice(idx, 1, incident);
       }
       if (this.alertOnUnits(incident.unitsAssigned)) {
         this.dispatchUnit(incident.id);
@@ -366,7 +346,11 @@ export default {
       );
       const idx = this.getIndexOfIncident(update.incidentId);
       if (idx !== -1) {
-        this.incidents[idx][update.field] = update.value;
+        // const inc = this.incidents[idx][update] = update.value;
+        this.incidents.splice(idx, 1, {
+          ...this.incidents[idx],
+          [update.field]: update.value,
+        });
       } else {
         console.error(
           `Unable to find incident ${update.incidentId} during incident update.`,
@@ -397,18 +381,19 @@ export default {
         if (udx === -1) {
           // We don't have the unit assigned to this call, let us assign it
           this.incidents[idx].unitsAssigned.push(update.unit);
+          // this.incidents.splice(idx, 1, unt);
           console.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
-          if (this.alertOnUnits(update.unit)) {
+          if (this.alertOnUnits([update.unit])) {
             this.dispatchUnit(update.incidentId);
           }
         } else {
           // Unit is on call, lets change its status
-          this.incidents[idx].unitsAssigned[udx] = {
+          this.incidents[idx].unitsAssigned.splice(udx, 1, {
             ...this.incidents[idx].unitsAssigned[udx],
             ...update.unit,
-          };
+          });
         }
       }
     },
@@ -439,7 +424,7 @@ export default {
         if (cdx === -1) {
           this.incidents[idx].comments.push(comment.comment);
         } else {
-          this.incidents[idx].comments[cdx] = comment.comment;
+          this.incidents[idx].comments.splice(cdx, 1, comment.comment);
           console.warn(
             `Duplicate comments found on incident ${comment.incidentId}`,
             comment.comment
@@ -463,7 +448,10 @@ export default {
       );
       if (udx !== -1) {
         // Update unit if we found it
-        this.units[udx][update.field] = update.value;
+        this.units.splice(udx, 1, {
+          ...this.units[udx],
+          [update.field]: update.value,
+        });
       } else {
         // Add data to new unit if we could not find it
         console.info(`${update.radioName} not found, adding it.`);

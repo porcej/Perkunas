@@ -25,6 +25,7 @@
               <h2 class="vwia__title">
                 <span class="vwia__problem">{{ incident.problem }} </span>
                 <span class="vwia__radio pull-right">
+                  <font-awesome-icon icon="bolt" />
                   {{ incident.primaryTacChannel }}
                 </span>
               </h2>

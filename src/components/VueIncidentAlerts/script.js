@@ -3,11 +3,17 @@ import Utils from "./utils";
 // import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import { latLng } from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faBolt);
 
 export default {
   name: "VueIncidentAlerts",
 
   components: {
+    FontAwesomeIcon,
     LMap,
     LTileLayer,
     LMarker,

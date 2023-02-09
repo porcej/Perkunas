@@ -1,5 +1,11 @@
 <template>
   <div class="vwi__incidents">
+    <div class="vwi__loading" v-if="loading">
+      <slot name="loading">
+        <h1>Loading...</h1>
+        <p><font-awesome-icon icon="spinner" size="2x" /></p>
+      </slot>
+    </div>
     <VueIncidentAlerts
       :incidents="alertedIncidents"
       @unalertIncident="unalertIncident"
@@ -30,7 +36,7 @@
         </div>
         <div class="vwi__call_info">
           <span class="vwi__radio_channel">
-            <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
+            <font-awesome-icon icon="bolt" />
             {{ incident.primaryTacChannel }}
           </span>
           <span class="vwi__call_time float-right">

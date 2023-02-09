@@ -110,6 +110,7 @@ export default {
         this.loadIncidents();
         this.loadUnits();
         this.alertTimer();
+        this.loading = false;
       } else {
         console.info("Connecting...");
         this.reconnectTimout = setTimeout(() => {

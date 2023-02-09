@@ -106,3 +106,13 @@ span.vwi__unit {
 .vwi__unit_status_o2 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
 .vwi__unit_status_off 	{ color:#000000 !important; border-color:#000000 !important; background-color: #e6e6e6 !important;}
 .vwi__unit_status_clear { color:#ffffff !important; border-color:#ffffff !important; background-color: #4a4a4a !important;}
+
+/* Define an animation behavior */
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+/* This is the class name given by the Font Awesome component when icon contains 'spinner' */
+.fa-spinner {
+  /* Apply 'spinner' keyframes looping once every second (1s)  */
+  animation: spinner 1s linear infinite;
+}

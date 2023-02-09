@@ -1,5 +1,11 @@
 <template>
   <div class="vwi__incidents">
+    <div class="vwi__loading" v-if="loading">
+      <slot name="loading">
+        <h1>Loading...</h1>
+        <p><font-awesome-icon icon="spinner" size="2x" /></p>
+      </slot>
+    </div>
     <VueIncidentAlerts
       :incidents="alertedIncidents"
       @unalertIncident="unalertIncident"

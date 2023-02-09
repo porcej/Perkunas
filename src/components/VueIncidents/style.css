@@ -17,6 +17,10 @@ span.vwi__radio_channel {
 	text-align: left;
 }
 
+span.vwi__radio_channel svg {
+	color: #ffc107;
+}
+
 ul.vwi__incidents_list {
 	width:  100%;
 	padding: 0; /* Remove padding */

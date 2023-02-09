@@ -1,11 +1,17 @@
 import Utils from "./utils";
 import VueIncidentAlerts from "@/components/VueIncidentAlerts";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faBolt, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faBolt, faSpinner);
+
 export default {
   name: "VueIncidents",
 
   components: {
-    // FontAwesomeIcon,
+    FontAwesomeIcon,
     VueIncidentAlerts,
   },
 

@@ -30,7 +30,7 @@
         </div>
         <div class="vwi__call_info">
           <span class="vwi__radio_channel">
-            <i class="fa fa-fw fa-bolt" aria-hidden="true"></i>
+            <font-awesome-icon icon="bolt" />
             {{ incident.primaryTacChannel }}
           </span>
           <span class="vwi__call_time float-right">

@@ -76,6 +76,12 @@ export default {
   },
 
   computed: {
+    /**
+     * Generates filtered list of incidents. specifically incidents without
+     * units assigned or without a master incident number are reemoved
+     *
+     * @returns {Array} array of filtered incidents
+     */
     cleanIncidents() {
       return this.incidents.filter(
         (inc) =>
@@ -404,6 +410,11 @@ export default {
             ...update.unit,
           });
         }
+      } else {
+        console.warn(
+          `Unable to find incident ${update.incidentId} during incident unit update.`,
+          update
+        );
       }
     },
 

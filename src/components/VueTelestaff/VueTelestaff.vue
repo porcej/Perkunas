@@ -10,7 +10,9 @@
 
       <div class="vwt__error" v-else-if="error || !roster">
         <slot name="error">
-          <span class="vwt__title">{{ error || "Something went wrong!" }}</span>
+          <span class="vwt__title warn">{{
+            error || "Roster not found!"
+          }}</span>
         </slot>
       </div>
       <template v-else>

@@ -37,7 +37,8 @@ const utils = {
     utils.station = opts.station;
     return fetch(`${opts.url}${opts.date}`)
       .then((resp) => resp.json())
-      .then(utils.mapRoster);
+      .then(utils.mapRoster)
+      .catch((err) => console.warn(err));
   },
 
   mapRoster(data) {

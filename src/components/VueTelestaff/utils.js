@@ -78,7 +78,7 @@ const utils = {
         day: utils.getTodayOrDayName(shiftDate),
         date: shiftDate,
         shift: shift.title.split(" ")[1].toLowerCase(),
-      }
+      };
     }
 
     return {

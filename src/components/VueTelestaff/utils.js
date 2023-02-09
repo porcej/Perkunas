@@ -37,7 +37,8 @@ const utils = {
     utils.station = opts.station;
     return fetch(`${opts.url}${opts.date}`)
       .then((resp) => resp.json())
-      .then(utils.mapRoster);
+      .then(utils.mapRoster)
+      .catch((err) => console.warn(err));
   },
 
   mapRoster(data) {
@@ -72,6 +73,14 @@ const utils = {
     const stationRoster = shift["Station"].filter(
       (station) => station.title === utils.station
     )[0];
+
+    if (stationRoster === undefined) {
+      return {
+        day: utils.getTodayOrDayName(shiftDate),
+        date: shiftDate,
+        shift: shift.title.split(" ")[1].toLowerCase(),
+      };
+    }
 
     return {
       day: utils.getTodayOrDayName(shiftDate),

@@ -284,8 +284,15 @@ export default {
     alertOnUnits(units) {
       const alertedUnits =
         typeof units !== "string"
-          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
-          : units.filter((udx) => this.unitsToAlert.includes(udx));
+          ? units.filter(
+              (udx) =>
+                this.unitsToAlert.includes(udx.radioName) &&
+                udx.endDateTime === null
+            )
+          : units.filter(
+              (udx) =>
+                this.unitsToAlert.includes(udx) && udx.endDateTime === null
+            );
       return this.alertForAllIncidents || alertedUnits.length > 0;
     },
 

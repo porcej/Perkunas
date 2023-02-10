@@ -251,11 +251,14 @@ export default {
         url: this.incidentsUrl,
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
-        this.incidents.forEach((idx) => {
+        this.incidents.forEach((inc) => {
           console.info(
-            `Incident ${idx.masterIncidentNumber} with ${idx.id} opened:`,
-            idx
+            `Incident ${inc.masterIncidentNumber} with ${inc.id} opened:`,
+            inc
           );
+          if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
+            this.dispatchUnit(inc.id);
+          }
         });
       });
     },

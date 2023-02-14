@@ -78,6 +78,10 @@ span.vwia__unit {
 	color: #4a4a4a;
 }
 
+span.vwia__radio svg {
+	color: #ffc107;
+}
+
 .vwia__unit_status_iq 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #33a02c !important;}
 .vwia__unit_status_av 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #b2df8a !important;}
 .vwia__unit_status_busy 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #e31a1c !important;}

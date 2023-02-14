@@ -25,6 +25,7 @@
               <h2 class="vwia__title">
                 <span class="vwia__problem">{{ incident.problem }} </span>
                 <span class="vwia__radio pull-right">
+                  <font-awesome-icon icon="bolt" />
                   {{ incident.primaryTacChannel }}
                 </span>
               </h2>
@@ -52,7 +53,9 @@
                 {{ comment.text }} <br />
               </span>
             </p>
-            <button class="button_close" @click="unalert(incident)">X</button>
+            <button class="button_close" @click="unalert(incident.id)">
+              X
+            </button>
           </div>
           <div class="col-7 h-100">
             <l-map

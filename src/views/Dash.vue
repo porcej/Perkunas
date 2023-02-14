@@ -3,7 +3,8 @@
     <b-row class="h-100">
       <b-col cols="3" :style="wxBorderStyle" class="incident_column">
         <vue-incidents
-          :url="$appConfig.incident_url"
+          :incidentsUrl="$appConfig.incident_url"
+          :unitsUrl="$appConfig.units_url"
           :station="$route.params.stationId"
         />
       </b-col>

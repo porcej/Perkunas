@@ -251,11 +251,14 @@ export default {
         url: this.incidentsUrl,
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
-        this.incidents.forEach((idx) => {
+        this.incidents.forEach((inc) => {
           console.info(
-            `Incident ${idx.masterIncidentNumber} with ${idx.id} opened:`,
-            idx
+            `Incident ${inc.masterIncidentNumber} with ${inc.id} opened:`,
+            inc
           );
+          if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
+            this.dispatchUnit(inc.id);
+          }
         });
       });
     },
@@ -284,8 +287,15 @@ export default {
     alertOnUnits(units) {
       const alertedUnits =
         typeof units !== "string"
-          ? units.filter((udx) => this.unitsToAlert.includes(udx.radioName))
-          : units.filter((udx) => this.unitsToAlert.includes(udx));
+          ? units.filter(
+              (udx) =>
+                this.unitsToAlert.includes(udx.radioName) &&
+                udx.endDateTime === null
+            )
+          : units.filter(
+              (udx) =>
+                this.unitsToAlert.includes(udx) && udx.endDateTime === null
+            );
       return this.alertForAllIncidents || alertedUnits.length > 0;
     },
 

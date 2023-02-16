@@ -1,5 +1,4 @@
 import Utils from "./utils";
-// import moment from "moment";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faStar,

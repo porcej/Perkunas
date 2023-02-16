@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 
 const RANK_MAPPINGS = [
   {
@@ -61,7 +61,7 @@ const utils = {
       },
     } = data;
 
-    const shiftDate = moment(dataDate, "dddd, MMMM Do YYYY");
+    const shiftDate = dayjs(dataDate, "dddd, MMMM D YYYY");
 
     const thisShift = utils.getShift(shiftDate);
 
@@ -131,12 +131,12 @@ const utils = {
   },
 
   getDeltaDay(delta = 1) {
-    const tomorrow = moment().add(delta, "days");
+    const tomorrow = dayjs().add(delta, "days");
     return tomorrow.format("YYYYMMDD");
   },
 
   getTodayOrDayName(date) {
-    if (date.isSame(moment(), "day")) {
+    if (date.isSame(dayjs(), "day")) {
       return "Today";
     }
     return date.format("dddd");
@@ -175,14 +175,14 @@ const utils = {
   },
 
   getShift(date) {
-    date = date || moment();
+    date = date || dayjs();
     const shiftMap = {
       // 2017/00/03 - 2017/00/05 - 2017/00/07
-      a: [moment([2017, 0, 3]), moment([2017, 0, 5]), moment([2017, 0, 7])],
+      a: [dayjs([2017, 1, 3]), dayjs([2017, 1, 5]), dayjs([2017, 1, 7])],
       // 2017/00/06 - 2017/00/08 - 2017/00/10
-      b: [moment([2017, 0, 6]), moment([2017, 0, 8]), moment([2017, 0, 10])],
+      b: [dayjs([2017, 1, 6]), dayjs([2017, 1, 8]), dayjs([2017, 1, 10])],
       // 2017/00/09 - 2017/00/11 - 2017/00/13
-      c: [moment([2017, 0, 9]), moment([2017, 0, 11]), moment([2017, 0, 13])],
+      c: [dayjs([2017, 1, 9]), dayjs([2017, 1, 11]), dayjs([2017, 1, 13])],
     };
 
     for (const shiftKey in shiftMap) {

@@ -29,7 +29,7 @@
     </b-row>
     <b-row class="footer fixed-bottom" :style="wxBorderStyle">
       <b-col cols="4" class="align-middle">
-        <vue-clock :showBackground="false" />
+        <vue-clock :showBackground="true" />
       </b-col>
       <b-col cols="8">
         <vue-weather

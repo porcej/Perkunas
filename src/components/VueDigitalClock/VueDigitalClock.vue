@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import moment from "moment";
+import dayjs from "dayjs";
 
 export default {
   name: "VueDigitalClock",
@@ -67,7 +67,7 @@ export default {
   },
 
   mounted() {
-    this.windClock();
+    this.clockTick();
   },
 
   destroyed() {
@@ -75,21 +75,17 @@ export default {
   },
 
   methods: {
-    windClock() {
-      const timeStr = moment().format(this.format);
-      this.backgroundString = timeStr.replace(/[a-z0-9]/gim, "8");
-      this.clockTick();
-    },
-
     clockTick() {
       clearTimeout(this.timeout);
       const time = Number(this.updateInterval);
       if (!time || time < 10 || this.destroyed) {
         return;
       }
-      this.time = moment().format(this.timeFormat);
+      if (this.timeFormat && this.timeFormat !== "") {
+        this.time = dayjs().format(this.timeFormat);
+      }
       if (this.dateFormat && this.dateFormat !== "") {
-        this.date = moment().format(this.dateFormat);
+        this.date = dayjs().format(this.dateFormat);
       }
       this.timeout = setTimeout(() => this.clockTick(), time);
     },

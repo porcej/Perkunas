@@ -6,6 +6,7 @@
           :incidentsUrl="$appConfig.incident_url"
           :unitsUrl="$appConfig.units_url"
           :station="$route.params.stationId"
+          :alertForAllIncidents="alertForAllIncidents"
         />
       </b-col>
       <b-col :style="wxContentStyle">
@@ -54,6 +55,12 @@ export default {
     VueClock,
     VueTelestaff,
     VueIncidents,
+  },
+  props: {
+    alertForAllIncidents: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {

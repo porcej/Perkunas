@@ -7,6 +7,7 @@ body,
 html {
   /*background-color: #121212;*/
   height: 100%;
+  overflow: hidden; /* Remove scroll bars */
 }
 
 #app {

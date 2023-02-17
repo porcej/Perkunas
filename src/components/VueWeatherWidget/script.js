@@ -55,7 +55,7 @@ export default {
     // Color for the temperature bar if above hot theshold
     hotColor: {
       type: String,
-      default: "rgb(255, 1, 0 )",
+      default: "rgb(255, 1, 0)",
     },
 
     // Color for the temperature bar if below cold theshold

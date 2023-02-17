@@ -36,6 +36,7 @@
           :weatherUrl="$appConfig.weather_url"
           :updateInterval="900000"
           :hideHeader="true"
+          textColor="rgb(139, 148, 158)"
         />
       </b-col>
     </b-row>

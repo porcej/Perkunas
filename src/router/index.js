@@ -18,6 +18,12 @@ const routes = [
     component: () => import("../views/Dash.vue"),
   },
   {
+    path: "/station/:stationId/all",
+    name: "Dashboard - Alert for All",
+    component: () => import("../views/Dash.vue"),
+    props: { alertForAllIncidents: true },
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting

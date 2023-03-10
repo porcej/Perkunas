@@ -32,78 +32,69 @@ const RANK_MAPPINGS = [
 
 const utils = {
   station: null,
+  homeUnits: [],
 
   fetchRoster(opts = {}) {
     utils.station = opts.station;
+    utils.homeUnits = opts.homeUnits;
     return fetch(`${opts.url}${opts.date}`)
       .then((resp) => resp.json())
+      .then((data) => {
+        console.debug("Raw staffing data rxed:", data);
+        if (data.status_code !== 200) {
+          throw new Error(
+            `Error received from Staffing server. Error code ${data.status_code}`
+          );
+        }
+        return data.data;
+      })
       .then(utils.mapRoster)
       .catch((err) => console.warn(err));
   },
 
   mapRoster(data) {
-    console.log(data);
-    const {
-      data: {
-        Date: [
-          {
-            title: dataDate,
-            Institution: [
-              {
-                Agency: [
-                  {
-                    Batallion: [{ Shift: shifts }],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    } = data;
+    console.debug("Staffing data rxed:", data);
 
-    const shiftDate = dayjs(dataDate, "dddd, MMMM D YYYY");
+    const shiftDate = dayjs(data.RosterDate);
 
-    console.log(shiftDate);
+    const stationRoster = data.records.filter(
+      (record) =>
+        (record.stationName === utils.station ||
+          utils.homeUnits.indexOf(record.unitName) >= 0) &&
+        record.unitName !== "{off roster}" &&
+        record.isWorking
+    );
 
-    const thisShift = utils.getShift(shiftDate);
+    const stationUnitNames = stationRoster.reduce((units, record) => {
+      if (!units.includes(record.unitName)) {
+        units.push(record.unitName);
+      }
+      return units;
+    }, []);
 
-    const shift = shifts.filter(
-      (shift) => shift.title === `Ops ${thisShift.toUpperCase()} Shift`
-    )[0];
+    console.info(`Staffing records found for ${stationUnitNames.join(" ")}.`);
 
-    const stationRoster = shift["Station"].filter(
-      (station) => station.title === utils.station
-    )[0];
-
-    if (stationRoster === undefined) {
-      return {
-        day: utils.getTodayOrDayName(shiftDate),
-        date: shiftDate,
-        shift: shift.title.split(" ")[1].toLowerCase(),
-      };
-    }
+    const stationUnits = stationRoster.reduce((units, record) => {
+      let idx = units.findIndex((r) => r.title === record.unitName);
+      if (idx === -1) {
+        idx =
+          units.push({
+            title: record.unitName,
+            notes: record.unitNotes,
+            Position: [],
+          }) - 1;
+      }
+      units[idx].Position.push(record);
+      return units;
+    }, []);
+    console.debug("Station units: ", stationUnits);
 
     return {
       day: utils.getTodayOrDayName(shiftDate),
       date: shiftDate,
-      shift: shift.title.split(" ")[1].toLowerCase(),
-      station: stationRoster.title,
-      units: stationRoster["Unit"].filter(
-        (unit) => unit.title !== "{off roster}"
-      ),
-      activities: stationRoster["Unit"].reduce((activites, unit) => {
-        if (unit.notes !== "") {
-          activites.push(
-            {
-              unit: unit.title,
-              activity: unit.notes,
-            },
-            []
-          );
-        }
-        return activites;
-      }, []),
+      shift: utils.getShift(shiftDate),
+      station: utils.station,
+      units: stationUnits,
     };
   },
 
@@ -138,17 +129,8 @@ const utils = {
   },
 
   parseShiftTimes(str) {
-    // 05/30/2017 07:00 AM
-    str = str || "";
-    str = str.slice(10);
-    var parts = str.trim().split(" ");
-    if (parts[1] == "PM") {
-      var p = parts[0].split(":");
-      if (p[0] != 12) {
-        parts[0] = (parseInt(p[0]) + 12).toString() + ":" + p[1];
-      }
-    }
-    return parts[0];
+    const date = dayjs(str);
+    return date.format("HH:mm");
   },
 
   getShift(date) {

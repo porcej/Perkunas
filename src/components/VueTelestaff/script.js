@@ -1,4 +1,5 @@
 import Utils from "./utils";
+// import moment from "moment";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faStar,
@@ -34,12 +35,17 @@ export default {
     url: {
       type: String,
       default: "https://localhost:5001/api/TelestaffProxy/",
-      // console.log(`${location.protocol}//${location.host}/`);
     },
 
     station: {
       type: String,
       required: true,
+    },
+
+    homeUnits: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
 
     // Auto update interval in milliseconds, default is 15 minutes
@@ -73,7 +79,8 @@ export default {
 
   methods: {
     workingPositions(positions) {
-      return positions.filter((position) => position.isWorking);
+      positions.filter((position) => position.isWorking);
+      return true;
     },
 
     formatRank(position) {
@@ -150,6 +157,7 @@ export default {
       return Utils.fetchRoster({
         url: this.url,
         station: "Station " + this.station,
+        homeUnits: this.homeUnits,
         date: date,
       }).then((data) => {
         this.$set(this, "roster", data);

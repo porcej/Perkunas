@@ -31,7 +31,7 @@
               <li
                 class="vwt__position"
                 :key="pdx"
-                v-for="(position, pdx) in workingPositions(unit.Position)"
+                v-for="(position, pdx) in unit.Position"
               >
                 <font-awesome-icon
                   :icon="formatRank(position.title)"

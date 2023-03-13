@@ -55,8 +55,8 @@ const utils = {
   mapRoster(data) {
     console.debug("Staffing data rxed:", data);
 
-    const shiftDate = dayjs(data.RosterDate);
-
+    const shiftDate = dayjs(data.rosterDate);
+    
     const stationRoster = data.records.filter(
       (record) =>
         (record.stationName === utils.station ||

@@ -1,5 +1,16 @@
+/**
+ * Utility functions for VueTelestaff.
+ * @module VueTelestaff/utils
+ * @author jo2@kt3i.com
+ * @version 0.0.1
+ * @license MIT
+ */
 import dayjs from "dayjs";
 
+/**
+ * Mappings for finding ranks from strings
+ *
+ */
 const RANK_MAPPINGS = [
   {
     rank: "medic",
@@ -30,14 +41,48 @@ const RANK_MAPPINGS = [
   },
 ];
 
+/**
+ * Utilities to handle fetching data
+ *
+ */
 const utils = {
-  station: null,
-  homeUnits: [],
+  /**
+   * Retrieves a list of units assigned to this station
+   *
+   */
+  fetchUnits() {
+    return fetch(
+      `${utils.unitsUrl}?` +
+        new URLSearchParams({
+          homeStation: utils.station,
+        })
+    ).then((resp) => resp.json());
+  },
+
+  // fetchRoster(opts = {}) {
+  //   return
+  //     fetch(`${opts.url}${opts.date}?` +
+  //       new URLSearchParams({
+  //         station: opts.station,
+  //       })
+  //       .then((resp) => resp.json())
+  //       .then((data) => {
+  //         console.debug("Raw staffing data rxed:", data);
+  //         if (data.status_code !== 200) {
+  //           throw new Error(
+  //             `Error received from Staffing server. Error code ${data.status_code}`
+  //           );
+  //         }
+  //         return data.data;
+  //       })
+  //     .then(([rosterData, homeUnits]) =>
+  //       utils.filterRoster(rosterData, homeUnits, opts.station)
+  //     )
+  //     .catch((err) => console.warn(err));
+  // },
 
   fetchRoster(opts = {}) {
-    utils.station = opts.station;
-    utils.homeUnits = opts.homeUnits;
-    return fetch(`${opts.url}${opts.date}`)
+    return fetch(`${opts.url}${opts.date}?station=${opts.station}`)
       .then((resp) => resp.json())
       .then((data) => {
         console.debug("Raw staffing data rxed:", data);
@@ -48,33 +93,56 @@ const utils = {
         }
         return data.data;
       })
-      .then(utils.mapRoster)
+      .then((roster) => utils.mapRoster(roster, opts.station))
       .catch((err) => console.warn(err));
   },
 
-  mapRoster(data) {
-    console.debug("Staffing data rxed:", data);
-
-    const shiftDate = dayjs(data.rosterDate);
-    
-    const stationRoster = data.records.filter(
-      (record) =>
-        (record.stationName === utils.station ||
-          utils.homeUnits.indexOf(record.unitName) >= 0) &&
-        record.unitName !== "{off roster}" &&
-        record.isWorking
-    );
-
-    const stationUnitNames = stationRoster.reduce((units, record) => {
-      if (!units.includes(record.unitName)) {
-        units.push(record.unitName);
-      }
-      return units;
+  /**
+   * Returns a list of unit names from a list of unitDto objects
+   *
+   * @params {Array} List of unit objects
+   * @returns {Array} List of unit names
+   *
+   */
+  filterUnits(data) {
+    return data.reduce((udx, unit) => {
+      udx.push(unit.radioName);
+      return udx;
     }, []);
+  },
 
-    console.info(`Staffing records found for ${stationUnitNames.join(" ")}.`);
+  /**
+   * Returns a staffing roster for VueTelestaff
+   *
+   * @params {Object} roster raw staffing data
+   * @params {Array}  homeUnits list of units homed at this station
+   * @returns {Object} Staffing data based on the supplied roster for the
+   *                   supplied station and homeunits
+   */
+  mapRoster(roster, station) {
+    const rosterDate = dayjs(roster.rosterDate);
 
-    const stationUnits = stationRoster.reduce((units, record) => {
+    // console.info(
+    //   `${"*".padStart(
+    //     79,
+    //     "*"
+    //   )}\nThis station staffs for station ${station} and the following units \n\t${homeUnits.join(
+    //     "\n\t"
+    //   )}\n${"*".padStart(79, "*")}`
+    // );
+
+    // Filter roster by isWorking and unitName in homeUnits
+    // const stationRoster = roster.records.filter(
+    //   (record) =>
+    //     (record.stationName === station ||
+    //       record.stationName === station ||
+    //       record.stationAbbreviation === station ||
+    //       homeUnits.indexOf(record.unitName) >= 0) &&
+    //     record.unitName !== "{off roster}" &&
+    //     record.isWorking
+    // );
+
+    const stationUnits = roster.records.reduce((units, record) => {
       let idx = units.findIndex((r) => r.title === record.unitName);
       if (idx === -1) {
         idx =
@@ -90,19 +158,32 @@ const utils = {
     console.debug("Station units: ", stationUnits);
 
     return {
-      day: utils.getTodayOrDayName(shiftDate),
-      date: shiftDate,
-      shift: utils.getShift(shiftDate),
-      station: utils.station,
+      day: utils.getTodayOrDayName(rosterDate),
+      date: rosterDate,
+      shift: utils.getShift(rosterDate),
+      station: station,
       units: stationUnits,
     };
   },
 
+  /**
+   * Returns a Date string representing a date delta days from now
+   *
+   * @params {Number} delta difference between current date and new date
+   * @returns {String} represents a date in the format YYYYMMDD
+   */
   getDeltaDay(delta = 1) {
-    const tomorrow = dayjs().add(delta, "days");
-    return tomorrow.format("YYYYMMDD");
+    const date = dayjs().add(delta, "days");
+    return date.format("YYYYMMDD");
   },
 
+  /**
+   * Returns a Date string or "Today" if the date is today
+   *
+   * @params {Object} date DayJS instance of the date in question.
+   * @returns {String} containing today iff date is today, otherwise
+   *                   returns a date string representing date.
+   */
   getTodayOrDayName(date) {
     if (date.isSame(dayjs(), "day")) {
       return "Today";
@@ -110,11 +191,14 @@ const utils = {
     return date.format("dddd");
   },
 
+  /**
+   * Attempts to find a rank from the given string
+   *
+   * @params {String} str containing a rank.
+   * @returns {String} the rank represented in str.
+   */
   getRank(str) {
     str = str.toLowerCase() || "";
-
-    // Prepare str by removing '.', '+', and leading + trailing white
-    //      space, and making everything lower case
     str = str.replace(/[.+]/g, "").trim();
 
     const retVal = RANK_MAPPINGS.find((rank) => {
@@ -128,11 +212,23 @@ const utils = {
     return retVal;
   },
 
+  /**
+   * Returns a time str in Staffing format
+   *
+   * @params {String} str representing time
+   * @returns {String} str reformated to "HH:mm"
+   */
   parseShiftTimes(str) {
     const date = dayjs(str);
     return date.format("HH:mm");
   },
 
+  /**
+   * Returns the chift identifier for the provided date
+   *
+   * @params {Object} DayJS representation of a date
+   * @returns {Char} representing date
+   */
   getShift(date) {
     date = date || dayjs();
     const shiftMap = {

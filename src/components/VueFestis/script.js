@@ -33,6 +33,8 @@ export default {
   props: {
     url: {
       type: String,
+      default: "https://localhost:5001/api/TelestaffProxy/",
+      // console.log(`${location.protocol}//${location.host}/`);
     },
 
     station: {
@@ -70,47 +72,19 @@ export default {
   },
 
   methods: {
-    /**
-     * Filters a list of objects returning those objects with the property
-     * isWorking true
-     *
-     * @params {Array} positions list of position objects
-     * @returns {Array} array of filtered incidents
-     */
     workingPositions(positions) {
-      positions.filter((position) => position.isWorking);
-      return true;
+      return positions.filter((position) => position.isWorking);
     },
 
-    /**
-     * Returns an icon representing the position provided
-     *
-     * @params {Object} position representation of a Telestaff postion
-     * @returns {String} string representation of the provided position
-     */
     formatRank(position) {
       return Utils.getRank(position).icon;
     },
 
-    /**
-     * Cleans up a person's name
-     *
-     * @params {String} name repenting a person's name
-     * @returns {String} a cleaned up string representing a person's name
-     */
     formatName(name) {
+      // return [name.replace(/\(.*$/g, "").trim(), name.replace(/^[^(]*|\(|\)/g, "").trim()];
       return name.replace(/\(.*$/g, "").trim();
     },
 
-    /**
-     * Formats time for displaying staffing information
-     *
-     * @params {String} startTime string representation of the start of a
-     *                  staffing period
-     * @params {String} endTime string representation of the end of a
-     *                  staffing period
-     * @returns {Object} Representing a staffing period display
-     */
     formatTime(startTime, endTime) {
       const timeText = `${Utils.parseShiftTimes(
         startTime
@@ -141,15 +115,6 @@ export default {
       };
     },
 
-    /**
-     * Loads staffing information and sets timeouts to rerun
-     *
-     * @params {String} startTime string representation of the start of a
-     *                  staffing period
-     * @params {String} endTime string representation of the end of a
-     *                  staffing period
-     * @returns {Object} Representing a staffing period display
-     */
     staff(setLoading = true) {
       this.$set(this, "loading", setLoading);
       return this.$nextTick()
@@ -184,7 +149,7 @@ export default {
           : this.date;
       return Utils.fetchRoster({
         url: this.url,
-        station: this.station,
+        station: "Station " + this.station,
         date: date,
       }).then((data) => {
         this.$set(this, "roster", data);

@@ -121,27 +121,6 @@ const utils = {
    */
   mapRoster(roster, station) {
     const rosterDate = dayjs(roster.rosterDate);
-
-    // console.info(
-    //   `${"*".padStart(
-    //     79,
-    //     "*"
-    //   )}\nThis station staffs for station ${station} and the following units \n\t${homeUnits.join(
-    //     "\n\t"
-    //   )}\n${"*".padStart(79, "*")}`
-    // );
-
-    // Filter roster by isWorking and unitName in homeUnits
-    // const stationRoster = roster.records.filter(
-    //   (record) =>
-    //     (record.stationName === station ||
-    //       record.stationName === station ||
-    //       record.stationAbbreviation === station ||
-    //       homeUnits.indexOf(record.unitName) >= 0) &&
-    //     record.unitName !== "{off roster}" &&
-    //     record.isWorking
-    // );
-
     const stationUnits = roster.records.reduce((units, record) => {
       let idx = units.findIndex((r) => r.title === record.unitName);
       if (idx === -1) {

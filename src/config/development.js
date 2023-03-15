@@ -5,7 +5,7 @@ export default {
     "https://sfireweb2.alexgov.net/DashboardApi/api/Dashboard/incidents",
   units_url: "https://sfireweb2.alexgov.net/DashboardApi/api/Dashboard/units",
   telestaff_url:
-    "https://sfireweb2.alexgov.net/DashboardApi/api/TelestaffProxy/",
+    "https://fire-173822vma.alexgov.net:5001/api/Telestaff/staffing/",
   weather_url:
     "https://sfireweb2.alexgov.net/DashboardApi/api/WeatherForecast/",
 };

@@ -1,7 +1,7 @@
 /**
  * Utility functions for VueTelestaff.
  * @module VueTelestaff/utils
- * @author jo2@kt3i.com
+ * @author joe@kt3i.com
  * @version 0.0.1
  * @license MIT
  */

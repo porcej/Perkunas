@@ -9,9 +9,9 @@
       @hidden="closeAlerts"
       @shown="openAlerts"
     >
-      <div class="container-fluid h-100">
+      <div class="container-fluid h-100 vwia__alert_wrapper">
         <div class="row h-100" v-for="incident in incidents" :key="incident.id">
-          <div class="col-5 h-100">
+          <div class="col-5 h-100 pl-4 pt-1">
             <div class="vwia__units row">
               <span
                 :class="[`vwia__unit ${colorUnit(unit.statusId)}`]"
@@ -66,6 +66,7 @@
             >
               <l-tile-layer :url="url" />
               <l-marker
+                :icon="generateIcon()"
                 :lat-lng="mapMe(incident.latitude, incident.longitude)"
               />
             </l-map>

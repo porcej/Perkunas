@@ -25,6 +25,11 @@
 	max-width: 100%;
 	width: 100%;
 }
+
+.modal-body {
+	padding: 0px !important;
+}
+
 /*div.modal-dialog {
     max-width: 100%;
     margin: 0;

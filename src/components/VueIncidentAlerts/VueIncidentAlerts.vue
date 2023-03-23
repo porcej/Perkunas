@@ -49,7 +49,10 @@
               </div>
             </div>
             <p class="vwia__notes">
-              <span v-for="comment in incident.comments" :key="comment.id">
+              <span
+                v-for="comment in incident.comments"
+                :key="'comment_' + comment.id.toString()"
+              >
                 {{ comment.text }} <br />
               </span>
             </p>

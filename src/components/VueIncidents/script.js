@@ -79,6 +79,7 @@ export default {
   destroyed() {
     clearTimeout(this.alertingTimeout);
     clearTimeout(this.reconnectTimout);
+    this.alertCounters = [];
   },
 
   computed: {
@@ -149,11 +150,13 @@ export default {
      * Adds an incident to the alerts modal window
      *
      * @params {Number} incidentId number representing an incident
+     * @returns {Boolean} true iff the alert is initiated, false otherwise
      */
     alertIncident(incidentId) {
       const idx = this.getIndexOfIncident(incidentId);
       if (idx === -1) {
         console.error(`Alert requested for unknown incident #${incidentId}.`);
+        return false;
       } else {
         console.info(
           "***************************************\n",
@@ -165,13 +168,14 @@ export default {
         const alertedAlready = this.alertedIncidents.includes(
           this.incidents[idx]
         );
-        if (!alertedAlready) {
-          this.alertedIncidents.push(this.incidents[idx]);
-        } else {
+        if (alertedAlready) {
           console.info(
-            `\t${this.incidents[idx].masterIncidentNumber} already alerts`
+            `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} already alerted.`
           );
+          return false;
         }
+        this.alertedIncidents.push(this.incidents[idx]);
+        return true;
       }
     },
 
@@ -180,9 +184,9 @@ export default {
      *
      * @params {Number} incidentId number representing an incident
      */
-    dispatchUnit(incidentId) {
-      this.alertIncident(incidentId);
-      this.alertCounters[incidentId.toString()] = 0;
+    dispatchIncident(incidentId) {
+      if (this.alertIncident(incidentId))
+        this.alertCounters[incidentId.toString()] = 0;
     },
 
     /**
@@ -257,7 +261,7 @@ export default {
             inc
           );
           if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
-            this.dispatchUnit(inc.id);
+            this.dispatchIncident(inc.id);
           }
         });
       });
@@ -323,7 +327,7 @@ export default {
         this.incidents.splice(idx, 1, incident);
       }
       if (this.alertOnUnits(incident.unitsAssigned) && incident.isActive) {
-        this.dispatchUnit(incident.id);
+        this.dispatchIncident(incident.id);
       }
     },
 
@@ -418,7 +422,7 @@ export default {
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
           if (this.alertOnUnits([update.unit])) {
-            this.dispatchUnit(update.incidentId);
+            this.dispatchIncident(update.incidentId);
           }
         } else {
           // Unit is on call, lets change its status

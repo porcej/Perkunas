@@ -57,7 +57,7 @@
               X
             </button>
           </div>
-          <div class="col-7 h-100">
+          <div class="col-7 h-100 px-0">
             <l-map
               v-if="showMap"
               :zoom="zoom"

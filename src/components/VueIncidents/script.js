@@ -291,8 +291,6 @@ export default {
      */
     alertOnUnits(units) {
       // If we alert for everyone check all units to see if we have timeouts
-
-      units = units.map( u => u.radioName);
       let alertedUnits = [];
       if (this.alertForAllIncidents) {
         alertedUnits = units.filter((udx) =>
@@ -327,7 +325,7 @@ export default {
       const dt = new Date(timeStr);
       const now = new Date();
       dt.setSeconds(dt.getSeconds() + this.alertingTimeout);
-      return dt >= now;
+      return dt >= now || isNaN(dt);
     },
 
     /**

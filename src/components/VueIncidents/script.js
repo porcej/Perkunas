@@ -413,7 +413,7 @@ export default {
           [update.field]: update.value,
         });
       } else {
-        console.error(
+        console.warn(
           `Unable to find incident ${update.incidentId} during incident update.`,
           update
         );

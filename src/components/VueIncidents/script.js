@@ -165,6 +165,15 @@ export default {
           this.incidents[idx],
           "\n***************************************\n"
         );
+        // Check if there are units assigned to the incident
+        if (this.incidents[idx].unitsAssigned.length < 1) {
+          console.info(
+            `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} no units assigned.`
+          );
+          return false;
+        }
+
+        // now we check if we have already alerted on this incident
         const alertedAlready = this.alertedIncidents.includes(
           this.incidents[idx]
         );
@@ -261,7 +270,9 @@ export default {
             inc
           );
           if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
-            console.debug(`Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`);
+            console.debug(
+              `Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`
+            );
             this.dispatchIncident(inc.id);
           }
         });
@@ -490,7 +501,10 @@ export default {
         if (cdx === -1) {
           this.incidents[idx].comments.push(comment.comment);
         } else {
-          this.incidents[idx].comments.splice(cdx, 1, comment.comment);
+          this.incidents[idx].comments.splice(cdx, 1, {
+            ...this.incidents[idx].comments[cdx],
+            ...comment.comment,
+          });
           console.warn(
             `Duplicate comments found on incident ${comment.incidentId}`,
             comment.comment

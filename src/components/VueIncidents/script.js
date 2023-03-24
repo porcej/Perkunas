@@ -261,6 +261,7 @@ export default {
             inc
           );
           if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
+            console.debug(`Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`);
             this.dispatchIncident(inc.id);
           }
         });
@@ -289,18 +290,44 @@ export default {
      * @returns {Boolean} true if and only if we should alert
      */
     alertOnUnits(units) {
-      const alertedUnits =
-        typeof units !== "string"
-          ? units.filter(
-              (udx) =>
-                this.unitsToAlert.includes(udx.radioName) &&
-                udx.endDateTime === null
-            )
-          : units.filter(
-              (udx) =>
-                this.unitsToAlert.includes(udx) && udx.endDateTime === null
-            );
-      return this.alertForAllIncidents || alertedUnits.length > 0;
+      // If we alert for everyone check all units to see if we have timeouts
+
+      units = units.map( u => u.radioName);
+      let alertedUnits = [];
+      if (this.alertForAllIncidents) {
+        alertedUnits = units.filter((udx) =>
+          this.checkUnitTimeout(udx.startDateTime)
+        );
+      } else {
+        alertedUnits =
+          typeof units !== "string"
+            ? units.filter(
+                (udx) =>
+                  this.unitsToAlert.includes(udx.radioName) &&
+                  udx.endDateTime === null &&
+                  this.checkUnitTimeout(udx.startDateTime)
+              )
+            : units.filter(
+                (udx) =>
+                  this.unitsToAlert.includes(udx) && udx.endDateTime === null
+              );
+      }
+      return alertedUnits.length > 0;
+    },
+
+    /**
+     * Checks if datetime is + this.alertingTimeout is less than
+     * the current time
+     *
+     * @param {String} timeString - DateTime to use as reference
+     * @returns {Boolean} true iff this unit alerting time has not
+     *                    expired
+     */
+    checkUnitTimeout(timeStr) {
+      const dt = new Date(timeStr);
+      const now = new Date();
+      dt.setSeconds(dt.getSeconds() + this.alertingTimeout);
+      return dt >= now;
     },
 
     /**

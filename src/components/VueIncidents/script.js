@@ -314,7 +314,7 @@ export default {
     },
 
     /**
-     * Checks if datetime is + this.alertingTimeout is less than
+     * Checks if datetime is + this.alertTimeOut is less than
      * the current time
      *
      * @param {String} timeString - DateTime to use as reference
@@ -324,7 +324,7 @@ export default {
     checkUnitTimeout(timeStr) {
       const dt = new Date(timeStr);
       const now = new Date();
-      dt.setSeconds(dt.getSeconds() + this.alertingTimeout);
+      dt.setSeconds(dt.getSeconds() + this.alertTimeOut);
       return dt >= now || isNaN(dt);
     },
 

@@ -66,7 +66,11 @@ export default {
      */
     generateIcon(incidentType = "") {
       let iconString = Utils.getIncidentIcon(incidentType);
-      console.debug(`Generating ${iconString} icon for ${incidentType}.`);
+
+      if (iconString) {
+        console.log(iconString);
+      }
+
       return icon({
         iconUrl: require("./icons/fire.png"),
         iconSize: [30, 30],

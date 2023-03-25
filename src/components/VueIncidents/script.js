@@ -165,19 +165,11 @@ export default {
           this.incidents[idx],
           "\n***************************************\n"
         );
-        // Check if there are units assigned to the incident
-        if (this.incidents[idx].unitsAssigned.length < 1) {
-          console.info(
-            `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} no units assigned.`
-          );
-          return false;
-        }
 
         // now we check if we have already alerted on this incident
-        const alertedAlready = this.alertedIncidents.includes(
-          this.incidents[idx]
-        );
-        if (alertedAlready) {
+        if (
+          this.alertedIncidents.findIndex((inc) => incidentId === inc.id) >= 0
+        ) {
           console.info(
             `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} already alerted.`
           );
@@ -189,13 +181,39 @@ export default {
     },
 
     /**
-     * Alerts on the provided incident and starts timeout timer
+     * Checks to see if we need to alert for incident id
      *
      * @params {Number} incidentId number representing an incident
+     * @returns {Boolean} true iff incident is alerted
      */
     dispatchIncident(incidentId) {
-      if (this.alertIncident(incidentId))
-        this.alertCounters[incidentId.toString()] = 0;
+      console.debug(`Dispatching incident ${incidentId}.`);
+      const idx = this.getIndexOfIncident(incidentId);
+
+      if (idx === -1) {
+        console.error(`Alert requested for unknown incident #${incidentId}.`);
+        return false;
+      }
+
+      // Incident is not active
+      if (!this.incidents[idx].isActive) return false;
+
+      // Filter the incident units, to those on the call, without an endtime
+      // and no alerting window expiration
+      const incidentUnits = this.incidents[idx].unitsAssigned.filter((udx) =>
+        this.checkUnitTimeout(udx.startDateTime) &&
+          udx.endDateTime === null &&
+          (this.alertForAllIncidents ||
+            this.unitsToAlert.includes(udx.radioName))
+      );
+
+      // No units to alert on
+      if (incidentUnits.length === 0) return false;
+
+      const alerted = this.alertIncident(incidentId);
+      // Add our unalert timeout
+      if (alerted) this.alertCounters[incidentId.toString()] = 0;
+      return alerted;
     },
 
     /**
@@ -269,11 +287,10 @@ export default {
             `Incident ${inc.masterIncidentNumber} with ${inc.id} opened:`,
             inc
           );
-          if (this.alertOnUnits(inc.unitsAssigned) && inc.isActive) {
+          if (this.dispatchIncident(inc.id)) {
             console.debug(
               `Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`
             );
-            this.dispatchIncident(inc.id);
           }
         });
       });
@@ -293,9 +310,7 @@ export default {
     },
 
     /**
-     * Checks to see if we should alert for any of the units units can be
-     * strings of objects so long as any objects have a radioName field
-     * that is a string
+     * Checks to see if radioName is in our list of units to alert
      *
      * @param {Array} units array representing units
      * @returns {Boolean} true if and only if we should alert
@@ -355,15 +370,16 @@ export default {
         idx = 0;
       } else {
         // We have a record of this incident, lets update it
+        this.incidents.splice(idx, 1, incident);
         console.warn(
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
-        // Something must have gone wrong, replace the entire incident
-        this.incidents.splice(idx, 1, incident);
       }
-      if (this.alertOnUnits(incident.unitsAssigned) && incident.isActive) {
-        this.dispatchIncident(incident.id);
+      if (this.dispatchIncident(incident.id)) {
+        console.debug(
+          `Incident ${incident.id} alerted from onIncidentAdded().`
+        );
       }
     },
 
@@ -457,8 +473,10 @@ export default {
           console.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
-          if (this.alertOnUnits([update.unit])) {
-            this.dispatchIncident(update.incidentId);
+          if (this.dispatchIncident(update.incidentId)) {
+            console.debug(
+              `Incident alert for ${update.incidentId} from onIncidentUnitUpdated().`
+            );
           }
         } else {
           // Unit is on call, lets change its status

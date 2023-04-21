@@ -9,9 +9,9 @@
       @hidden="closeAlerts"
       @shown="openAlerts"
     >
-      <div class="container-fluid h-100">
+      <div class="container-fluid h-100 vwia__alert_wrapper">
         <div class="row h-100" v-for="incident in incidents" :key="incident.id">
-          <div class="col-5 h-100">
+          <div class="col-5 h-100 pl-4 pt-1">
             <div class="vwia__units row">
               <span
                 :class="[`vwia__unit ${colorUnit(unit.statusId)}`]"
@@ -49,7 +49,10 @@
               </div>
             </div>
             <p class="vwia__notes">
-              <span v-for="comment in incident.comments" :key="comment.id">
+              <span
+                v-for="comment in incident.comments"
+                :key="'comment_' + comment.id.toString()"
+              >
                 {{ comment.text }} <br />
               </span>
             </p>
@@ -57,7 +60,7 @@
               X
             </button>
           </div>
-          <div class="col-7 h-100">
+          <div class="col-7 h-100 px-0">
             <l-map
               v-if="showMap"
               :zoom="zoom"
@@ -66,6 +69,7 @@
             >
               <l-tile-layer :url="url" />
               <l-marker
+                :icon="generateIcon()"
                 :lat-lng="mapMe(incident.latitude, incident.longitude)"
               />
             </l-map>

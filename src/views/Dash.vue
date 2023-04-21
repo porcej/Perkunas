@@ -1,6 +1,6 @@
 <template>
-  <b-container fluid class="h-100 station-dashboard">
-    <b-row class="h-100">
+  <b-container fluid class="h-100 station-dashboard bg-dark">
+    <b-row class="h-100 bg-dark">
       <b-col cols="3" :style="wxBorderStyle" class="incident_column">
         <vue-incidents
           :incidentsUrl="$appConfig.incident_url"
@@ -37,6 +37,7 @@
           :weatherUrl="$appConfig.weather_url"
           :updateInterval="900000"
           :hideHeader="true"
+          textColor="rgb(139, 148, 158)"
         />
       </b-col>
     </b-row>

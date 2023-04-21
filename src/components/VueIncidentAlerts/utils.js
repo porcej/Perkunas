@@ -1,3 +1,15 @@
+/**
+ * Utility functions for VueIncidentAlerts.
+ * @module VueIncidentAlerts/utils
+ * @author joe@kt3i.com
+ * @version 0.0.1
+ * @license MIT
+ */
+
+/**
+ * Unit status code to description mapping
+ *
+ */
 const UNIT_STATUS_MAPPING = [
   {
     code: "OFF",
@@ -93,7 +105,26 @@ const UNIT_STATUS_MAPPING = [
   },
 ];
 
+/**
+ * Call Type to Icon Map
+ *
+ */
+const CALLTYPE_ICON_MAP = {
+  medical: "medical.png",
+  fire: "fire.png",
+  other: "other.png",
+};
+
 const utils = {
+  /**
+   * Maps an icon from a call type
+   *
+   * @params {String} callType - nature of the call
+   * @returns {String} path to call type's icon
+   */
+  getIncidentIcon(callType) {
+    return `./icons/${CALLTYPE_ICON_MAP[callType] ?? "fire.png"}`;
+  },
   fetchIncidents(opts = {}) {
     return fetch(`${opts.url}`).then((resp) => resp.json());
   },

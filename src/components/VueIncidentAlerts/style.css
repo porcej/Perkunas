@@ -25,6 +25,11 @@
 	max-width: 100%;
 	width: 100%;
 }
+
+.modal-body {
+	padding: 0px !important;
+}
+
 /*div.modal-dialog {
     max-width: 100%;
     margin: 0;
@@ -72,6 +77,7 @@ span.vwia__unit {
 	margin-right: 3px;
 	font-weight: normal;
 	text-align: left;
+	color: rgb(241, 101, 34);
 }
 
 .vwia__city {

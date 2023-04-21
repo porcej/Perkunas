@@ -8,19 +8,6 @@
 	margin: 0; /* Remove margins */
 }
 
-.vwi__call_info {
-	text-align: left;
-	font-size: 1.5rem;
-}
-
-span.vwi__radio_channel {
-	text-align: left;
-}
-
-span.vwi__radio_channel svg {
-	color: #ffc107;
-}
-
 ul.vwi__incidents_list {
 	width:  100%;
 	padding: 0; /* Remove padding */
@@ -82,11 +69,27 @@ span.vwi__unit {
 	margin-right: 3px;
 	font-weight: normal;
 	text-align: left;
+	color: rgb(241, 101, 34);
 }
 
 .vwi__city {
 	color: #4a4a4a;
 }
+
+.vwi__call_info {
+	text-align: left;
+	font-size: 1.5rem;
+	color: rgb(139, 148, 158);
+}
+
+span.vwi__radio_channel {
+	text-align: left;
+}
+
+span.vwi__radio_channel svg {
+	color: #ffc107;
+}
+
 
 .vwi__unit_status_iq 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #33a02c !important;}
 .vwi__unit_status_av 	{ color:#1f1f1f !important; border-color:#1f1f1f !important; background-color: #b2df8a !important;}
@@ -105,7 +108,7 @@ span.vwi__unit {
 .vwi__unit_status_e2 	{ color:#ffff00 !important; border-color:#ffff00 !important; background-color: #c0c0c0 !important;}
 .vwi__unit_status_o2 	{ color:#0080c0 !important; border-color:#0080c0 !important; background-color: #c0c0c0 !important;}
 .vwi__unit_status_off 	{ color:#000000 !important; border-color:#000000 !important; background-color: #e6e6e6 !important;}
-.vwi__unit_status_clear { color:#ffffff !important; border-color:#ffffff !important; background-color: #4a4a4a !important;}
+.vwi__unit_status_clear { color:rgb(139, 148, 158) !important; border-color:rgb(139, 148, 158) !important; background-color: #4a4a4a !important;}
 
 /* Define an animation behavior */
 @keyframes spinner {

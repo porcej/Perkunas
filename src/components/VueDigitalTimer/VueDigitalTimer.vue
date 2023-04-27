@@ -1,5 +1,12 @@
 <template>
-  <span :class="{vwdt_timer: true, 'text-success': timerOkay, 'text-warning': timerWarn, 'text-danger': timerDanger}">
+  <span
+    :class="{
+      vwdt_timer: true,
+      'text-success': timerOkay,
+      'text-warning': timerWarn,
+      'text-danger': timerDanger,
+    }"
+  >
     {{ time }}
   </span>
 </template>

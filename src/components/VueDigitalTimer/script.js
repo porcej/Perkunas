@@ -57,7 +57,7 @@ export default {
      * @returns {Boolean}
      */
     timerOkay() {
-      return (this.colorCodeTimer && (this.counter <= this.maxOkayTime ));
+      return this.colorCodeTimer && this.counter <= this.maxOkayTime;
     },
 
     /**
@@ -66,7 +66,10 @@ export default {
      * @returns {Boolean}
      */
     timerWarn() {
-      return (this.colorCodeTimer && (this.maxOkayTime < this.counter <= this.maxWarnTime ));
+      return (
+        this.colorCodeTimer &&
+        this.maxOkayTime < this.counter <= this.maxWarnTime
+      );
     },
 
     /**
@@ -75,7 +78,7 @@ export default {
      * @returns {Boolean}
      */
     timerDanger() {
-      return (this.colorCodeTimer && (this.counter > this.maxWarnTime ));
+      return this.colorCodeTimer && this.counter > this.maxWarnTime;
     },
   },
 
@@ -111,13 +114,13 @@ export default {
       if (!this.updateInterval || this.destroyed) {
         return;
       }
-      const hours = Math.floor(this.counter / MS_PER_HOUR)
+      const hours = Math.floor(this.counter / MS_PER_HOUR);
       const minutes = Math.floor((this.counter % MS_PER_HOUR) / MS_PER_MIN);
       const seconds = Math.floor((this.counter % MS_PER_MIN) / MS_PER_SEC);
 
-      const hoursString = hours > 0 ? `${hours}:`.padStart(3, '0') : "";
-      const minutesString = `${minutes}`.padStart(2, '0');
-      const secondsString = `${seconds}`.padStart(2, '0');
+      const hoursString = hours > 0 ? `${hours}:`.padStart(3, "0") : "";
+      const minutesString = `${minutes}`.padStart(2, "0");
+      const secondsString = `${seconds}`.padStart(2, "0");
 
       this.time = `${hoursString}${minutesString}:${secondsString}`;
       this.timeout = setTimeout(() => this.timerTick(), this.updateInterval);

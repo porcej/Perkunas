@@ -198,7 +198,9 @@ export default {
 
       // Incident is not active
       if (!this.incidents[idx].isActive) {
-        console.info(`Alert for incident#${incidentId} cancled, incident is not active.`)
+        console.info(
+          `Alert for incident#${incidentId} cancled, incident is not active.`
+        );
         return false;
       }
 

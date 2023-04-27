@@ -13,16 +13,18 @@
         <div class="row h-100" v-for="incident in incidents" :key="incident.id">
           <div class="col-5 h-100 pl-4 pt-1">
             <div class="vwia__title">
-                <span class="vwia__problem">{{ incident.problem }} </span>
-                <span class="vwia__radio float-right">
-                  <font-awesome-icon icon="bolt" />
-                  {{ incident.primaryTacChannel }}
-                </span>
+              <span class="vwia__problem">{{ incident.problem }} </span>
+              <span class="vwia__radio float-right">
+                <font-awesome-icon icon="bolt" />
+                {{ incident.primaryTacChannel }}
+              </span>
             </div>
             <div>
               <h3 class="vwia__address">
                 {{ incident.address }}
-                <span class="vwia__city float-right"> {{ incident.county }} </span>
+                <span class="vwia__city float-right">
+                  {{ incident.county }}
+                </span>
               </h3>
             </div>
             <div class="vwia__more_info row">

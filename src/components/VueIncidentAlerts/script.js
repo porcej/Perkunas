@@ -11,6 +11,7 @@ import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import VueTimer from "@/components/VueDigitalTimer";
 
 library.add(faBolt);
 
@@ -24,6 +25,7 @@ export default {
     LMarker,
     LPopup,
     LTooltip,
+    VueTimer,
   },
 
   props: {

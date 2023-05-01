@@ -12,6 +12,45 @@
       <div class="container-fluid h-100 vwia__alert_wrapper">
         <div class="row h-100" v-for="incident in incidents" :key="incident.id">
           <div class="col-5 h-100 pl-4 pt-1">
+            <div class="vwia__title">
+              <span class="vwia__problem">{{ incident.problem }} </span>
+              <span class="vwia__radio float-right">
+                <font-awesome-icon icon="bolt" />
+                {{ incident.primaryTacChannel }}
+              </span>
+            </div>
+            <div>
+              <h3 class="vwia__address">
+                {{ incident.address }}
+                <span class="vwia__city float-right">
+                  {{ incident.county }}
+                </span>
+              </h3>
+            </div>
+            <div class="vwia__more_info row">
+              <h4 class="vwia__mapbox col">
+                <span class="text-muted">Box: </span>
+                <span class="vwia__mapbox_val"> {{ incident.mapInfo }} </span>
+              </h4>
+              <h4 class="vwia__xstreet col text-right">
+                <span class="text-muted">X Streets: </span>
+                <span class="vwia__xstreet_val">
+                  {{ incident.crossStreet }}
+                </span>
+              </h4>
+            </div>
+            <div class="vwi__call_times">
+              <span class="vwi__call_time">
+                <span class="text-muted"> Dispatched: </span>
+                {{ formatTime(incident.incidentStartDateTime) }}
+              </span>
+              <span v-if="incident.isActive" class="vwi__call_time float-right">
+                <VueTimer :counterStart="incident.incidentStartDateTime" />
+              </span>
+              <span v-else class="vwi__call_time float-right">
+                End: {{ formatTime(incident.incidentEndDateTime) }}
+              </span>
+            </div>
             <div class="vwia__units row">
               <span
                 :class="[`vwia__unit ${colorUnit(unit.statusId)}`]"
@@ -20,33 +59,6 @@
               >
                 {{ unit.radioName }}
               </span>
-            </div>
-            <div class="row">
-              <h2 class="vwia__title">
-                <span class="vwia__problem">{{ incident.problem }} </span>
-                <span class="vwia__radio pull-right">
-                  <font-awesome-icon icon="bolt" />
-                  {{ incident.primaryTacChannel }}
-                </span>
-              </h2>
-            </div>
-            <div class="row">
-              <h3 class="vwia__address">
-                {{ incident.address }}
-                <span class="vwia__city"> {{ incident.county }} </span>
-              </h3>
-            </div>
-            <div class="vwia__more_info row">
-              <div class="vwia__mapbox col">
-                Box:
-                <span class="vwia__mapbox_val"> {{ incident.mapInfo }} </span>
-              </div>
-              <div class="vwia__xstreet col text-right">
-                X Streets:
-                <span class="vwia__xstreet_val">
-                  {{ incident.crossStreet }}
-                </span>
-              </div>
             </div>
             <p class="vwia__notes">
               <span

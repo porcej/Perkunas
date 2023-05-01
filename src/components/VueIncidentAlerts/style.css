@@ -67,7 +67,8 @@ span.vwia__unit {
 
 .vwia__title {
 	font-size: 1.5rem;
-	text-align: left;
+	font-weight: 500;
+	line-height: 1.2;
 }
 
 .vwia__address {

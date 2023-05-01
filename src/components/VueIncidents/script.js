@@ -184,9 +184,10 @@ export default {
      * Checks to see if we need to alert for incident id
      *
      * @params {Number} incidentId number representing an incident
+     * @params {Boolean} alert flag to set timeout counter on true
      * @returns {Boolean} true iff incident is alerted
      */
-    dispatchIncident(incidentId) {
+    dispatchIncident(incidentId, alert = false) {
       console.debug(`Dispatching incident ${incidentId}.`);
       const idx = this.getIndexOfIncident(incidentId);
 
@@ -196,12 +197,18 @@ export default {
       }
 
       // Incident is not active
-      if (!this.incidents[idx].isActive) return false;
+      if (!this.incidents[idx].isActive) {
+        console.info(
+          `Alert for incident#${incidentId} cancled, incident is not active.`
+        );
+        return false;
+      }
 
       // Filter the incident units, to those on the call, without an endtime
       // and no alerting window expiration
-      const incidentUnits = this.incidents[idx].unitsAssigned.filter((udx) =>
-        this.checkUnitTimeout(udx.startDateTime) &&
+      const incidentUnits = this.incidents[idx].unitsAssigned.filter(
+        (udx) =>
+          this.checkUnitTimeout(udx.startDateTime) &&
           udx.endDateTime === null &&
           (this.alertForAllIncidents ||
             this.unitsToAlert.includes(udx.radioName))
@@ -210,10 +217,36 @@ export default {
       // No units to alert on
       if (incidentUnits.length === 0) return false;
 
-      const alerted = this.alertIncident(incidentId);
+      // const alerted = this.alertIncident(incidentId);
+
+      console.info(
+        `*******************************************\n`,
+        `*** Alert Requested for Incident `,
+        `${this.incidents[idx].masterIncidentNumber} `,
+        this.incidents[idx],
+        "\n***************************************\n"
+      );
+
+      // now we check if we have already alerted on this incident
+      if (
+        this.alertedIncidents.findIndex((inc) => incidentId === inc.id) >= 0
+      ) {
+        console.info(
+          `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} already alerted.`
+        );
+        return false;
+      }
+      this.alertedIncidents.push(this.incidents[idx]);
+
       // Add our unalert timeout
-      if (alerted) this.alertCounters[incidentId.toString()] = 0;
-      return alerted;
+      if (alert) {
+        this.alertCounters[incidentId.toString()] = 0;
+        console.debug(
+          `Starting counter for incident `,
+          `${this.incidents[idx].masterIncidentNumber}`
+        );
+      }
+      return true;
     },
 
     /**
@@ -287,7 +320,7 @@ export default {
             `Incident ${inc.masterIncidentNumber} with ${inc.id} opened:`,
             inc
           );
-          if (this.dispatchIncident(inc.id)) {
+          if (this.dispatchIncident(inc.id, true)) {
             console.debug(
               `Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`
             );
@@ -376,7 +409,7 @@ export default {
           incident
         );
       }
-      if (this.dispatchIncident(incident.id)) {
+      if (this.dispatchIncident(incident.id, true)) {
         console.debug(
           `Incident ${incident.id} alerted from onIncidentAdded().`
         );
@@ -473,7 +506,7 @@ export default {
           console.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
-          if (this.dispatchIncident(update.incidentId)) {
+          if (this.dispatchIncident(update.incidentId, true)) {
             console.debug(
               `Incident alert for ${update.incidentId} from onIncidentUnitUpdated().`
             );

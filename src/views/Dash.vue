@@ -26,6 +26,10 @@
           date="tomorrow"
           :updateInterval="15 * 60 * 1000"
         />
+        <vue-messages
+          :url="$appConfig.messages_url"
+          :updateInterval="30
+        >
       </b-col>
     </b-row>
     <b-row class="footer fixed-bottom" :style="wxBorderStyle">
@@ -48,6 +52,7 @@
 import VueWeather from "@/components/VueWeatherWidget";
 import VueClock from "@/components/VueDigitalClock";
 import VueTelestaff from "@/components/VueTelestaff";
+import VueMessages from "@/components/VueMessages";
 import VueIncidents from "@/components/VueIncidents";
 
 export default {
@@ -55,6 +60,7 @@ export default {
     VueWeather,
     VueClock,
     VueTelestaff,
+    VueMessages,
     VueIncidents,
   },
   props: {

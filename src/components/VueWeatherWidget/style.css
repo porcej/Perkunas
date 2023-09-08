@@ -2,6 +2,7 @@
   width: 100%;
   min-width: 250px;
   max-width: 1000px;
+  font-family: "Roboto Condensed", Avenir, Helvetica, Arial, sans-serif;
 }
 
 .vww__header {
@@ -108,7 +109,7 @@
   display: block;
   font-size: 14px;
   font-weight: bold;
-  font-family: 'Frutiger CE 65 Bold';
+/*  font-family: 'Frutiger CE 65 Bold';*/
   margin-bottom: 5px;
 }
 

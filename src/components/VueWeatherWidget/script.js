@@ -1,6 +1,10 @@
 import Utils from "./utils";
 import WeatherIcons from "vue-weathericons";
 
+// Include Roboto Font Face
+import "@fontsource/roboto-condensed/300.css";
+import "@fontsource/roboto-condensed/400.css";
+
 export default {
   name: "VueWeatherWidget",
 

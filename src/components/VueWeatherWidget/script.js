@@ -4,12 +4,18 @@ import WeatherIcons from "vue-weathericons";
 // Include Roboto Font Face
 import "@fontsource/roboto-condensed/300.css";
 import "@fontsource/roboto-condensed/400.css";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faFlag } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add( faFlag );
 
 export default {
   name: "VueWeatherWidget",
 
   components: {
     WeatherIcons,
+    FontAwesomeIcon,
   },
 
   props: {
@@ -79,6 +85,12 @@ export default {
       type: String,
       default: "//localhost:5001/api/WeatherForecast/",
     },
+
+    // Use test data
+    testing: {
+      type: Boolean,
+      default: true,
+    },
   },
 
   data() {
@@ -96,6 +108,9 @@ export default {
   },
 
   mounted() {
+    if (this.testing) {
+      this.weatherUrl = "wx_test/WeatherForecast.json";
+    }
     this.hydrate();
   },
 

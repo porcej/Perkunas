@@ -71,6 +71,16 @@ export default {
 
   methods: {
     /**
+     * Converts Centigrade to Fahrenheit
+     *
+     * @params {Number} Centigrate Temperature
+     * @returns {Number} Temperature in Fahrenheit
+     */
+    convertC2F(c) {
+      return (9*c + 160) / 5;
+    },
+
+    /**
      * Filters a list of objects returning those objects with the property
      * isWorking true
      *

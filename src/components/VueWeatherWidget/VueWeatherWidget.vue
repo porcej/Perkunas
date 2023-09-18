@@ -14,7 +14,7 @@
       </div>
     </slot>
 
-    <div class="vww__content">
+    <div class="weather_content">
       <div class="vww__loading" v-if="loading">
         <slot name="loading">
           <weather-icons :icon="'day-cloudy'" />
@@ -33,31 +33,51 @@
       </div>
 
       <template v-else>
-        <div class="vww__currently">
-          <div>
-            <span width="80px" height="80px" style="display: block">
-              <weather-icons :icon="currently.icon" :fixed="true" />
-            </span>
-            <div
-              class="vww__temp"
-              :style="[
-                highTemperature <= currently.temperature
-                  ? { color: hotColor }
-                  : lowTemperature >= currently.temperature
-                  ? { color: coldColor }
-                  : {},
-              ]"
-            >
-              {{ Math.round(currently.temperature) }}&deg;
-            </div>
+        <div class="currently">
+          <div class="normal medium">
+            <span class="wi wi-strong-wind dimmed"></span>
+            <span> 10 <sup> SE &nbsp; </sup></span>
+            <span class="wi dimmed wi-umbrella low-temp"></span>
+            <span> 20% </span>
+            <!-- <span class="wi dimmed wi-sunset high-temp"></span> -->
+            <!-- <span> 7:53 pm </span> -->
           </div>
-          <div class="vww__summary">{{ currently.shortForecast }}</div>
+
+           <div class="large light">
+            <weather-icons :icon="currently.icon" :fixed="true" class="weathericon" />
+            <span class="vww__temp bright" >
+              {{ Math.round(currently.temperature) }}&deg;
+            </span>
+          </div> 
+          <div class="normal medium">
+          <div class="normal medium feelslike">
+            <span class="high-temp"> 91° </span>
+            <span> / </span>
+            <span class="low-temp"> 54° </span> 
+            <span class="wi weathericon wi-humidity low-temp"></span>
+            <span> 45% </span>
+
+            <span class="wi weathericon wi-thermometer"></span>
+            <span class="dimmed">
+                91.3°
+            </span>
+            <!-- <font-awesome-icon icon="fa-solid fa-flag" class="alert"/> -->
+          </div>
+<!--           <div class="normal medium alerts">
+            <span class="alert"> Snow Squall Warning </span>
+          </div> -->
+
+
+
+          </div>
+<!--           <div class="vww__summary">{{ currently.shortForecast }}</div>
           <div class="vww__wind">
             Wind: {{ currently.windSpeed }} ({{ currently.windDirection }})
-          </div>
+          </div> -->
         </div>
 
-        <div class="vww__daily">
+<!-- Daily -->
+<!--         <div class="vww__daily">
           <div class="vww__day" :key="day.name" v-for="day in daily">
             <span>{{ day.name }}</span>
             <span>
@@ -84,7 +104,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </template>
     </div>
   </div>

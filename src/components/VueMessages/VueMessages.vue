@@ -10,7 +10,7 @@
       <div class="vwm__error">
         <slot name="error">
           <span class="vww__title warn">{{
-            error"
+            error
           }}</span>
         </slot>
       </div>

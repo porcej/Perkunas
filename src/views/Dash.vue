@@ -28,8 +28,8 @@
         />
         <vue-messages
           :url="$appConfig.messages_url"
-          :updateInterval="30
-        >
+          :updateInterval="3000"
+        />
       </b-col>
     </b-row>
     <b-row class="footer fixed-bottom" :style="wxBorderStyle">

@@ -8,4 +8,6 @@ export default {
     "https://sfireweb2.alexgov.net/DashboardApi/api/Telestaff/staffing/",
   weather_url:
     "https://sfireweb2.alexgov.net/DashboardApi/api/WeatherForecast/",
+  messages_url:
+    "https://sfireweb2.alexgov.net/DashboardApi/api/messages/",
 };

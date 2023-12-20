@@ -34,7 +34,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    alertTimeOut: {
+    alertLengthOfTime: {
       type: Number,
       default: 120,
     },
@@ -48,7 +48,7 @@ export default {
       unitsToAlert: [],
       error: null,
       alertedIncidents: [],
-      alertCounters: {},
+      alertEndTimes: {},
       reconnectTimout: null,
       alertingTimeout: null,
     };
@@ -78,8 +78,8 @@ export default {
 
   destroyed() {
     clearTimeout(this.alertingTimeout);
-    clearTimeout(this.reconnectTimout);
-    this.alertCounters = [];
+    clearTimeout(this.reconnectTimOut);
+    this.alertEndTimes = [];
   },
 
   computed: {
@@ -135,11 +135,9 @@ export default {
      */
     alertTimer() {
       this.alertingTimeout = setTimeout(() => {
-        Object.keys(this.alertCounters).forEach((cdx) => {
-          if (this.alertCounters[cdx] > this.alertTimeOut) {
+        Object.keys(this.alertEndTimes).forEach((cdx) => {
+          if (this.alertEndTimes[cdx] < Date.now()) {
             this.unalertIncident(cdx);
-          } else {
-            this.alertCounters[cdx]++;
           }
         });
         this.alertTimer();
@@ -240,7 +238,8 @@ export default {
 
       // Add our unalert timeout
       if (alert) {
-        this.alertCounters[incidentId.toString()] = 0;
+        this.alertEndTime[incidentId.toString()] =
+          Date.now() + this.alertLengthOfTime * 1000;
         console.debug(
           `Starting counter for incident `,
           `${this.incidents[idx].masterIncidentNumber}`
@@ -267,7 +266,7 @@ export default {
           `Unable to unalert incident ${incidentId}, no such incident found.`
         );
       }
-      delete this.alertCounters[incidentId.toString()];
+      delete this.alertEndTimes[incidentId.toString()];
     },
 
     /**
@@ -373,7 +372,7 @@ export default {
     },
 
     /**
-     * Checks if datetime is + this.alertTimeOut is less than
+     * Checks if datetime is + this.alertLengthOfTime is less than
      * the current time
      *
      * @param {String} timeString - DateTime to use as reference
@@ -383,7 +382,7 @@ export default {
     checkUnitTimeout(timeStr) {
       const dt = new Date(timeStr);
       const now = new Date();
-      dt.setSeconds(dt.getSeconds() + this.alertTimeOut);
+      dt.setSeconds(dt.getSeconds() + this.alertLengthOfTime);
       return dt >= now || isNaN(dt);
     },
 

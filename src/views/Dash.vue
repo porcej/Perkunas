@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid class="h-100 station-dashboard bg-dark">
+  <b-container fluid class="h-100 station-dashboard">
     <b-row class="h-100 bg-dark">
       <b-col cols="3" :style="wxBorderStyle" class="incident_column">
         <vue-incidents
@@ -30,7 +30,7 @@
     </b-row>
     <b-row class="footer fixed-bottom" :style="wxBorderStyle">
       <b-col cols="4" class="align-middle">
-        <vue-clock :showBackground="true" />
+        <vue-clock :showBackground="true" :showDate="false" />
       </b-col>
       <b-col cols="8">
         <vue-weather
@@ -66,12 +66,14 @@ export default {
   data() {
     return {
       wxBorderStyle: {
-        backgroundColor: "#222222", // Vampire Christmas Theme
+        // backgroundColor: "#222222", // Vampire Christmas Theme
+        backgroundColor: "#000000",
         // backgroundColor: "#050A30", // Blue Theme
         // backgroundColor: "#323031", // Coffee Theme
       },
       wxContentStyle: {
-        backgroundColor: "inherit", // Vampire Christmas Theme
+        // backgroundColor: "inherit", // Vampire Christmas Theme
+        backgroundColor: "#000000",
         // backgroundColor: "#000C66", // Blue Theme
         // backgroundColor: "#3d3b3c", // Coffee Theme
       },

@@ -9,11 +9,13 @@
     right: 0;
     height: 100vh;
     display: flex;
-    background-color: rgb(34, 34, 34);
+/*    background-color: rgb(34, 34, 34);*/
+	background-color: #000000;
 }
 
 #vwia__fullScreenAlert .modal-dialog .modal-content {
-	background-color: rgb(34, 34, 34);
+/*    background-color: rgb(34, 34, 34);*/
+	background-color: #000000;
 	color: rgb(250, 250, 250);
 }
 

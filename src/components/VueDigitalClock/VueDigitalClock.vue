@@ -1,7 +1,7 @@
 <template>
   <div class="vwdc_clock">
-    <div class="vwdc_date">{{ date }}</div>
-    <div class="vwdc_time">
+    <div v-if="showDate" class="vwdc_date">{{ date }}</div>
+    <div v-if="showTime" class="vwdc_time">
       {{ time }}
       <div v-if="showBackground" class="vwdc_background">
         {{ backgroundString }}

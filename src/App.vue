@@ -6,6 +6,7 @@
 body,
 html {
   /*background-color: #121212;*/
+  background-color: #000000;
   height: 100%;
   overflow: hidden; /* Remove scroll bars */
 }

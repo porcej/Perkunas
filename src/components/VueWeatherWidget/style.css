@@ -18,8 +18,8 @@
 }
 
 .vww__content {
-  min-height: 150px;
-  height: 180px;
+/*  min-height: 150px;*/
+/*  height: 80px;*/
   display: flex;
   align-items: center;
   padding: 8px;

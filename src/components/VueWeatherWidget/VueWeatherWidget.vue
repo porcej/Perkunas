@@ -63,7 +63,7 @@
             <span>
               <weather-icons :icon="day.icon" :fixed="true" />
             </span>
-            <div class="vww__day-bar">
+            <div v-if="showTemperatureBar" class="vww__day-bar">
               <div :style="{ height: `${day.top}%` }">
                 <span>{{ Math.round(day.temperatureMax) }}&deg;</span>
               </div>
@@ -82,6 +82,11 @@
               >
                 <span>{{ Math.round(day.temperatureMin) }}&deg;</span>
               </div>
+            </div>
+            <div v-else class="vww__day-temp">
+              <span>{{ Math.round(day.temperatureMax) }}&deg;</span>
+              &nbsp; / &nbsp;
+              <span>{{ Math.round(day.temperatureMin) }}&deg;</span>
             </div>
           </div>
         </div>

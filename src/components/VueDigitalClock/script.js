@@ -20,6 +20,18 @@ export default {
       default: false,
     },
 
+    // If true shows the date
+    showDate: {
+      type: Boolean,
+      default: true,
+    },
+
+    // If true shows the time
+    showTime: {
+      type: Boolean,
+      default: true,
+    },
+
     // For counter mode, determines counter start
     counterStart: {
       type: Number,

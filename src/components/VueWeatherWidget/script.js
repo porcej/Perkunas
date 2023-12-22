@@ -26,6 +26,12 @@ export default {
       default: false,
     },
 
+    // show temperature bars
+    showTemperatureBar: {
+      type: Boolean,
+      default: false,
+    },
+
     // High Temperature Thereshold
     highTemperature: {
       type: Number,

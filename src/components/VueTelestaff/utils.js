@@ -6,6 +6,7 @@
  * @license MIT
  */
 import dayjs from "dayjs";
+import logger from "@/utils/logger";
 
 /**
  * Mappings for finding ranks from strings
@@ -85,7 +86,7 @@ const utils = {
     return fetch(`${opts.url}${opts.date}?station=${opts.station}`)
       .then((resp) => resp.json())
       .then((data) => {
-        console.debug("Raw staffing data rxed:", data);
+        logger.debug("Raw staffing data rxed:", data);
         if (data.status_code !== 200) {
           throw new Error(
             `Error received from Staffing server. Error code ${data.status_code}`
@@ -94,7 +95,7 @@ const utils = {
         return data.data;
       })
       .then((roster) => utils.mapRoster(roster, opts.station))
-      .catch((err) => console.warn(err));
+      .catch((err) => logger.warn(err));
   },
 
   /**
@@ -134,7 +135,7 @@ const utils = {
       units[idx].Position.push(record);
       return units;
     }, []);
-    console.debug("Station units: ", stationUnits);
+    logger.debug("Station units: ", stationUnits);
 
     return {
       day: utils.getTodayOrDayName(rosterDate),

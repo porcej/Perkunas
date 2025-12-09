@@ -6,6 +6,7 @@
  * @license MIT
  */
 import Utils from "./utils";
+import logger from "@/utils/logger";
 import { icon, latLng } from "leaflet";
 import { LMap, LTileLayer, LMarker, LPopup, LTooltip } from "vue2-leaflet";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -70,7 +71,7 @@ export default {
       let iconString = Utils.getIncidentIcon(incidentType);
 
       if (iconString) {
-        console.log(iconString);
+        logger.debug("Icon string:", iconString);
       }
 
       return icon({

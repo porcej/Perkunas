@@ -4,6 +4,7 @@
  */
 
 import dayjs from "dayjs";
+import logger from "@/utils/logger";
 
 export default {
   name: "VueDigitalClock",
@@ -65,8 +66,8 @@ export default {
    *
    */
   mounted() {
-    console.log(this.timeFormat.replace(/[a-z)-9]/gim, "8"));
     this.backgroundString = this.timeFormat.replace(/[a-z)-9]/gim, "8");
+    logger.debug("Background string generated:", this.backgroundString);
     this.clockTick();
   },
 

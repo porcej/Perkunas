@@ -58,6 +58,7 @@ export default {
       loading: true,
       roster: null,
       error: null,
+      timeout: null,
     };
   },
 
@@ -78,8 +79,7 @@ export default {
      * @returns {Array} array of filtered incidents
      */
     workingPositions(positions) {
-      positions.filter((position) => position.isWorking);
-      return true;
+      return positions.filter((position) => position.isWorking);
     },
 
     /**

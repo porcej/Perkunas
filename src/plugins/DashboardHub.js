@@ -1,4 +1,5 @@
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import logger from "@/utils/logger";
 
 /**
  *  Signalr Client Plugin for Dievas https://github.com/porcej/Dievas
@@ -63,7 +64,7 @@ export default {
        */
       $_connection.on("IncidentAdded", (incident) => {
         $_dashboardHub.$emit("incident-added", incident);
-        console.log(`+++Incident #${incident.id} added`, incident);
+        logger.info(`+++Incident #${incident.id} added`, incident);
       });
 
       /**
@@ -78,7 +79,7 @@ export default {
        */
       $_connection.on("IncidentFieldChanged", (incidentId, field, value) => {
         field = field.charAt(0).toLowerCase() + field.slice(1);
-        console.log(
+        logger.debug(
           `++Incident #${incidentId} field change RXed:\n\tField:`,
           field,
           "\n\tValue:",
@@ -129,7 +130,7 @@ export default {
        * @type {object}
        */
       $_connection.on("IncidentCommentAdded", (incidentId, comment) => {
-        console.log(
+        logger.debug(
           `++Comment added to incident ID ${incidentId} RXed`,
           comment
         );
@@ -148,7 +149,7 @@ export default {
        * @type {object}
        */
       $_connection.on("IncidentUnitStatusChanged", (incidentId, unit) => {
-        console.log(`++Incident Unit Change RXed: ${incidentId}`, unit);
+        logger.debug(`++Incident Unit Change RXed: ${incidentId}`, unit);
         $_dashboardHub.$emit("incident-unit-updated", {
           incidentId: incidentId,
           unit: unit,
@@ -174,7 +175,7 @@ export default {
        * @type {object}
        */
       $_connection.on("UnitStatusChanged", (radioName, statusId) => {
-        console.log(`++Unit Change RXed: ${radioName}`, statusId);
+        logger.debug(`++Unit Change RXed: ${radioName}`, statusId);
         $_dashboardHub.$emit("unit-updated", {
           radioName: radioName,
           field: "statusId",
@@ -193,7 +194,7 @@ export default {
        */
       $_connection.on("UnitFieldChanged", (radioName, field, value) => {
         field = field.charAt(0).toLowerCase() + field.slice(1);
-        console.log(
+        logger.debug(
           `++Unit Field Change Rxed: ${radioName}: ${field} => ${value}`
         );
         $_dashboardHub.$emit("unit-updated", {
@@ -212,7 +213,7 @@ export default {
        */
       function $_start() {
         $_startedPromise = $_connection.start().catch((err) => {
-          console.error("Failed to connect with hub", err);
+          logger.error("Failed to connect with hub", err);
           return new Promise((resolve, reject) =>
             setTimeout(() => $_start().then(resolve).catch(reject), 5000)
           );
@@ -231,9 +232,9 @@ export default {
        */
       $_connection.onclose((err) => {
         if (err) {
-          console.log("Disconnected from hub on error ", err);
+          logger.warn("Disconnected from hub on error ", err);
         } else {
-          console.log("Disconnected from hub.", err);
+          logger.info("Disconnected from hub.");
         }
         $_dashboardHub.$emit("disconnected");
         if (!$_manuallyClosed) $_start();
@@ -294,7 +295,7 @@ export default {
 
       return $_startedPromise
         .then(() => $_connection.invoke("JoinDashboard"))
-        .catch(console.error);
+        .catch((err) => logger.error("Failed to join dashboard", err));
     };
 
     /**
@@ -312,7 +313,7 @@ export default {
 
       return $_startedPromise
         .then(() => $_connection.invoke("Subscribe", group))
-        .catch(console.error);
+        .catch((err) => logger.error(`Failed to subscribe to ${group}`, err));
     };
   },
 };

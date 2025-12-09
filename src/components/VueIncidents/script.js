@@ -1,5 +1,6 @@
 import Utils from "./utils";
 import VueIncidentAlerts from "@/components/VueIncidentAlerts";
+import logger from "@/utils/logger";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faBolt, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -49,7 +50,7 @@ export default {
       error: null,
       alertedIncidents: [],
       alertCounters: {},
-      reconnectTimout: null,
+      reconnectTimeout: null,
       alertingTimeout: null,
     };
   },
@@ -78,8 +79,18 @@ export default {
 
   destroyed() {
     clearTimeout(this.alertingTimeout);
-    clearTimeout(this.reconnectTimout);
-    this.alertCounters = [];
+    clearTimeout(this.reconnectTimeout);
+    this.alertCounters = {};
+    // Clean up event listeners
+    this.$off("unalertIncident", this.unalertIncident);
+    this.$dashboardHub.$off("disconnected", this.onDisconnect);
+    this.$dashboardHub.$off("incident-added", this.onIncidentAdded);
+    this.$dashboardHub.$off("incident-updated", this.onIncidentUpdated);
+    this.$dashboardHub.$off("incident-removed", this.onIncidentRemoved);
+    this.$dashboardHub.$off("incidents-removed", this.onIncidentsRemoved);
+    this.$dashboardHub.$off("incident-unit-updated", this.onIncidentUnitUpdated);
+    this.$dashboardHub.$off("incident-comment-added", this.onIncidentCommentAdded);
+    this.$dashboardHub.$off("unit-updated", this.onUnitUpdated);
   },
 
   computed: {
@@ -106,15 +117,15 @@ export default {
      */
     initHubConnection() {
       if (this.$dashboardHub.state() === "Connected") {
-        console.info("Connected to hub.");
+        logger.info("Connected to hub.");
         this.$dashboardHub.JoinDashboard();
         this.loadIncidents();
         this.loadUnits();
         this.alertTimer();
         this.loading = false;
       } else {
-        console.info("Connecting...");
-        this.reconnectTimout = setTimeout(() => {
+        logger.info("Connecting...");
+        this.reconnectTimeout = setTimeout(() => {
           this.initHubConnection();
         }, this.reconnectTicker);
       }
@@ -125,7 +136,7 @@ export default {
      *
      */
     onDisconnect() {
-      console.warn("Disconnected from hub.");
+      logger.warn("Disconnected from hub.");
       this.initHubConnection();
     },
 
@@ -155,10 +166,10 @@ export default {
     alertIncident(incidentId) {
       const idx = this.getIndexOfIncident(incidentId);
       if (idx === -1) {
-        console.error(`Alert requested for unknown incident #${incidentId}.`);
+        logger.error(`Alert requested for unknown incident #${incidentId}.`);
         return false;
       } else {
-        console.info(
+        logger.info(
           "***************************************\n",
           `**** Alert Requested for Incident `,
           `${this.incidents[idx].masterIncidentNumber} `,
@@ -170,7 +181,7 @@ export default {
         if (
           this.alertedIncidents.findIndex((inc) => incidentId === inc.id) >= 0
         ) {
-          console.info(
+          logger.info(
             `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} already alerted.`
           );
           return false;
@@ -188,17 +199,17 @@ export default {
      * @returns {Boolean} true iff incident is alerted
      */
     dispatchIncident(incidentId, alert = false) {
-      console.debug(`Dispatching incident ${incidentId}.`);
+      logger.debug(`Dispatching incident ${incidentId}.`);
       const idx = this.getIndexOfIncident(incidentId);
 
       if (idx === -1) {
-        console.error(`Alert requested for unknown incident #${incidentId}.`);
+        logger.error(`Alert requested for unknown incident #${incidentId}.`);
         return false;
       }
 
       // Incident is not active
       if (!this.incidents[idx].isActive) {
-        console.info(
+        logger.info(
           `Alert for incident#${incidentId} cancled, incident is not active.`
         );
         return false;
@@ -219,7 +230,7 @@ export default {
 
       // const alerted = this.alertIncident(incidentId);
 
-      console.info(
+      logger.info(
         `*******************************************\n`,
         `*** Alert Requested for Incident `,
         `${this.incidents[idx].masterIncidentNumber} `,
@@ -231,7 +242,7 @@ export default {
       if (
         this.alertedIncidents.findIndex((inc) => incidentId === inc.id) >= 0
       ) {
-        console.info(
+        logger.info(
           `\tAlert canceled for ${this.incidents[idx].masterIncidentNumber} already alerted.`
         );
         return false;
@@ -241,7 +252,7 @@ export default {
       // Add our unalert timeout
       if (alert) {
         this.alertCounters[incidentId.toString()] = 0;
-        console.debug(
+        logger.debug(
           `Starting counter for incident `,
           `${this.incidents[idx].masterIncidentNumber}`
         );
@@ -261,9 +272,9 @@ export default {
       );
       if (idx !== -1) {
         this.alertedIncidents.splice(idx, 1);
-        console.info(`\tIncident ${incidentId} unalerted.`);
+        logger.info(`\tIncident ${incidentId} unalerted.`);
       } else {
-        console.warn(
+        logger.warn(
           `Unable to unalert incident ${incidentId}, no such incident found.`
         );
       }
@@ -296,7 +307,7 @@ export default {
         }
         return udx;
       }, []);
-      console.info(
+      logger.info(
         `${"*".padStart(
           79,
           "*"
@@ -316,12 +327,12 @@ export default {
       }).then((data) => {
         this.$set(this, "incidents", data.slice().reverse());
         this.incidents.forEach((inc) => {
-          console.info(
+          logger.info(
             `Incident ${inc.masterIncidentNumber} with ${inc.id} opened:`,
             inc
           );
           if (this.dispatchIncident(inc.id, true)) {
-            console.debug(
+            logger.debug(
               `Alert requested by incident loader for incident ${inc.masterIncidentNumber} with ${inc.id}.`
             );
           }
@@ -394,23 +405,23 @@ export default {
      * @param {Object} incident object representing new incident information
      */
     onIncidentAdded(incident) {
-      console.info("\tIncidented Added: ", incident);
+      logger.info("\tIncidented Added: ", incident);
       let idx = this.getIndexOfIncident(incident.id);
       if (idx === -1) {
         // We don't have a record of this incidnet, lets create it
         this.incidents.unshift(incident);
-        console.info(`\tIncident ${incident.id} opened:`, incident);
+        logger.info(`\tIncident ${incident.id} opened:`, incident);
         idx = 0;
       } else {
         // We have a record of this incident, lets update it
         this.incidents.splice(idx, 1, incident);
-        console.warn(
+        logger.warn(
           `New incident request received for ${incident.id} but we already have it.`,
           incident
         );
       }
       if (this.dispatchIncident(incident.id, true)) {
-        console.debug(
+        logger.debug(
           `Incident ${incident.id} alerted from onIncidentAdded().`
         );
       }
@@ -424,13 +435,13 @@ export default {
      *                 removed
      */
     onIncidentRemoved(incidentId) {
-      console.info(`\tRemove incident requested for ${incidentId}`);
+      logger.info(`\tRemove incident requested for ${incidentId}`);
       const idx = this.getIndexOfIncident(incidentId);
       if (idx !== -1) {
         this.incidents.splice(idx, 1);
-        console.info(`\tIncident ${incidentId} removed`);
+        logger.info(`\tIncident ${incidentId} removed`);
       } else {
-        console.warn(
+        logger.warn(
           `Unable to remove incident ${incidentId}, no such incident found.`
         );
       }
@@ -444,13 +455,13 @@ export default {
      *                to beremoved
      */
     onIncidentsRemoved(incidentIds) {
-      console.info(
+      logger.info(
         `\tRemoval of incidents ${incidentIds.join(", ")} has been requested`
       );
       incidentIds.forEach((incidentId) => {
         this.onIncidentRemoved(incidentId);
       });
-      console.info("\t**********************");
+      logger.info("\t**********************");
     },
 
     /**
@@ -461,7 +472,7 @@ export default {
      *                to beremoved
      */
     onIncidentUpdated(update) {
-      console.info(
+      logger.info(
         `\tIncident field change for ${update.incidentId} received: `,
         update
       );
@@ -473,7 +484,7 @@ export default {
           [update.field]: update.value,
         });
       } else {
-        console.warn(
+        logger.warn(
           `Unable to find incident ${update.incidentId} during incident update.`,
           update
         );
@@ -487,7 +498,7 @@ export default {
      * @param {Object} update Object representing changes to a unit
      */
     onIncidentUnitUpdated(update) {
-      console.info(
+      logger.info(
         `\tIncident unit update for incident id# ${update.incidentId} received: `,
         update
       );
@@ -503,11 +514,11 @@ export default {
           // We don't have the unit assigned to this call, let us assign it
           this.incidents[idx].unitsAssigned.push(update.unit);
           // this.incidents.splice(idx, 1, unt);
-          console.info(
+          logger.info(
             `\tAdding ${update.unit.radioName} to ${this.incidents[idx].masterIncidentNumber}.`
           );
           if (this.dispatchIncident(update.incidentId, true)) {
-            console.debug(
+            logger.debug(
               `Incident alert for ${update.incidentId} from onIncidentUnitUpdated().`
             );
           }
@@ -519,7 +530,7 @@ export default {
           });
         }
       } else {
-        console.warn(
+        logger.warn(
           `Unable to find incident ${update.incidentId} during incident unit update.`,
           update
         );
@@ -534,7 +545,7 @@ export default {
      *                 incident comment
      */
     onIncidentCommentAdded(comment) {
-      console.info(
+      logger.info(
         `\tIncident comment added to incident ${comment.incidentId}: `,
         comment
       );
@@ -556,7 +567,7 @@ export default {
             ...this.incidents[idx].comments[cdx],
             ...comment.comment,
           });
-          console.warn(
+          logger.warn(
             `Duplicate comments found on incident ${comment.incidentId}`,
             comment.comment
           );
@@ -571,7 +582,7 @@ export default {
      * @param {Object} update object representing a change to a unit
      */
     onUnitUpdated(update) {
-      console.info(
+      logger.info(
         `\tUnit: ${update.radioName} updated ${update.field}: ${update.value} `
       );
       const udx = this.units.findIndex(
@@ -585,10 +596,10 @@ export default {
         });
       } else {
         // Add data to new unit if we could not find it
-        console.info(`${update.radioName} not found, adding it.`);
+        logger.info(`${update.radioName} not found, adding it.`);
         this.units.push({
           radioName: update.radioName,
-          [update.field]: update.values,
+          [update.field]: update.value,
         });
       }
 

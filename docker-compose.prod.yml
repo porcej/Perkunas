@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: perkunas-prod
+    ports:
+      - "80:80"
+    networks:
+      - perkunas-network
+    restart: unless-stopped
+
+networks:
+  perkunas-network:
+    driver: bridge
+
